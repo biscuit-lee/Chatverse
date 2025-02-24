@@ -4,31 +4,18 @@ from bs4 import BeautifulSoup
 from flask import Flask, jsonify
 
 from scrapers import walmartScraper
-
-""" 
-def scrape(url):
-    # URL of the test website
-    url = 'http://example.com'
-        
-    # Send a GET request to the website
-    response = requests.get(url)
-
-    # Parse the HTML content of the page
-    soup = BeautifulSoup(response.content, 'html.parser')
-
-    # Find and print the title of the page
-    title = soup.find('title').get_text()
-    print('Page Title:', title)
-
-    # Find and print all paragraph texts
-    paragraphs = soup.find_all('p')
-    for i, paragraph in enumerate(paragraphs, start=1):
-        print(f'Paragraph {i}:', paragraph.get_text())
-
- """
+import datetime
 app = Flask(__name__)
 
+tweets = [{"id":1,"text":"HELLO CHAT", "author_id":1,"timestamp":"2003", "likes":1, "comment_amount":0,"parent_id":None},
+            {"id":2,"text":"GDAY CHAT", "author_id":2,"timestamp":"2010", "likes":21, "comment_amount":1,"parent_id":None}
+            ]
 
+@app.route('/api/tweets',methods=["GET"])
+def get_tweets():
+    print("sending tweets")
+
+    return jsonify(tweets)
 @app.route('/api/data', methods=['GET'])
 def get_data():
     data = {
