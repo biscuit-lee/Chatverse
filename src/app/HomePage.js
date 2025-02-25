@@ -5,9 +5,6 @@ export default function HomePage(){
 
     const [tweets,setTweet] = useState([]);
 
-
-    console.log("IN HOMEPAGE");
-
     // Fetch the tweets from backend
     useEffect(()=>{
         const fetchTweets = async ()=> {
@@ -33,7 +30,6 @@ export default function HomePage(){
     return(
         <div>
             <h1> Tweets </h1>
-
             <div>
                 {tweets.map((tweet,index) =>(
                     
