@@ -1,5 +1,7 @@
 //import { useState } from "react";
 import HomePage from "./HomePage";
+import LoginPage from "./auth/LoginPage";
+
 export default function Home() {
   //const res = await fetch('http://localhost:3000/api/data', { cache: 'no-store' });
   //const data = await res.json();
@@ -9,10 +11,9 @@ export default function Home() {
   return (
 
     <div>
-
+      <LoginPage/>
       <HomePage />
-      <h1>Next.js Frontend</h1>
-
+      
 
       
     </div>
