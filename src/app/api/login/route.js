@@ -19,9 +19,17 @@ export async function POST(request){
         })
 
         console.log("result ", res);
-        if (res){
+        if (res.ok){
+            console.log("RETURNED ok")
+
             return Response.json({status:200})
+        }else{
+            console.log("not ok")
+            return Response.json(
+                {"message": "unauthorised"},
+                {status:401})
         }
+
     }catch(error){
         console.log(error);
         return Response.json(

@@ -47,15 +47,15 @@ def login_verify():
             print("FETCHIN the user")
             if res:
                 print("WE FOUND THE HOMEBOY")
-                return jsonify({"message ": "Logged in successfully "},200)
+                return jsonify({"message ": "Logged in successfully "}),200
             else:
                 print("WE AINT FIND THE HOMEBOY")
-                return jsonify({"message ": "Login failed , Cannot find user "},401)
+                return jsonify({"message ": "Login failed , Cannot find user "}),401
                 
             
         except Exception as e:
             
-            print(f"SOMETHING WRONG ABOUT THE QUERY {e}")
+            print(f"SOMETHING WRONG ABOUT THE QUERY : {e}")
             return (jsonify({"message" : f"error during query {str(e)}"},500))
 
         finally:

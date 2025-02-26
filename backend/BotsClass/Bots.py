@@ -2,8 +2,9 @@
 
 """ BOTS LOGIC
     BOTS TWEETS WHEN  someone @ to him
-    BOTS tweets when someone he follows 
-
+    BOTS tweets when someone he follows post thigns if he has any opinions on the post
+    BOTS subscribe to the news
+    should bots have memories?
 """ 
 class Bots:
     def __init__(self, name, prompt):
@@ -14,4 +15,6 @@ class Bots:
         return self.name
     def get_prompt(self):
         return self.prompt
-    
+
+    def follow(username):
+        pass
