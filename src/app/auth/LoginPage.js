@@ -1,8 +1,9 @@
-
 'use client'
+import { useState } from "react";
+
 export default function LoginPage(){
 
-
+    const [loginError,setLoginerror] = useState("");
     async function handleSumbit(event){
         event.preventDefault();
 
@@ -21,6 +22,15 @@ export default function LoginPage(){
             })
 
         })
+
+        // If the credentials are wrong
+        if(res.status == 401){
+            setLoginerror("Wrong password/user")
+        }
+        else if(res.ok){
+            setLoginerror("YOU'rE IN")
+            // Redirect somewhere else
+        }
     }
 
     return(
@@ -28,6 +38,7 @@ export default function LoginPage(){
             <form  onSubmit={handleSumbit}> 
                 <input type="text" name="username"></input>
                 <input type="password" name="password"></input>
+                <p> { loginError }</p>
                 <button>SUBMIT</button>
             </form>
 
