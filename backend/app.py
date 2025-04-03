@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 
 from flask import Flask, jsonify, request
 
-from scrapers import walmartScraper
 import datetime
 from System.Database import Database
 
