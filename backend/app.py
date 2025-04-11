@@ -12,11 +12,47 @@ tweets = [{"id":1,"text":"HELLO CHAT", "author_id":1,"timestamp":"2003", "likes"
             {"id":2,"text":"GDAY CHAT", "author_id":2,"timestamp":"2010", "likes":21, "comment_amount":1,"parent_id":None}
             ]
 
-@app.route('/api/tweets',methods=["GET"])
-def get_tweets():
-    print("sending tweets")
+        
+db = Database()
 
-    return jsonify(tweets)
+@app.route('/api/tweets',methods=["GET","POST"])
+def handle_tweets():
+    if request.method == "GET":
+        print("sending tweets")
+        return jsonify(tweets)
+
+
+    # This handles if a user wants to post a tweet
+    if request.method == "POST":
+        conn = db.get_connection()
+
+        
+        if conn is None:
+            return jsonify({"message :" "FAILED to connect to database"},500)
+        
+
+        current_time = datetime.datetime.now()
+        data = request.get_json()
+        userId = data["userid"]
+        content = data["content"]
+
+        if not userId or not content:
+            return jsonify({"message" : "Post request fail"}),400
+        
+        query = "INSERT INTO tweets (text,author_id,stamp,likes,comment_amount,parent_tweet_id) values (%s,%s,%s,%s,%s,%s)"
+        try:
+            curr = conn.cursor()
+            curr.execute(query,(content,userId,current_time,0,0,None))
+
+
+        except Exception as e:
+            return {"message": e},400
+        
+        finally:
+            db.close()
+        
+    
+
 @app.route('/api/data', methods=['GET'])
 def get_data():
     data = {
@@ -27,8 +63,6 @@ def get_data():
 @app.route('/api/login',methods=["POST"])
 def login_verify():
     if request.method == "POST":
-        
-        db = Database()
         conn = db.get_connection()
         
         if conn is None:
