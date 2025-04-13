@@ -28,29 +28,36 @@ def handle_tweets():
 
         
         if conn is None:
-            return jsonify({"message :" "FAILED to connect to database"},500)
+            print("Conn is none")
+            return jsonify({"message": "FAILED to connect to database"}),500
         
 
         current_time = datetime.datetime.now()
         data = request.get_json()
-        userId = data["userid"]
+        userId = data["userId"]
         content = data["content"]
 
         if not userId or not content:
+            print("user id and content not exist")
             return jsonify({"message" : "Post request fail"}),400
         
-        query = "INSERT INTO tweets (text,author_id,stamp,likes,comment_amount,parent_tweet_id) values (%s,%s,%s,%s,%s,%s)"
+        query = "INSERT INTO tweets (text,author_id,timestamp,likes,comment_amount,parent_tweet_id) values (%s,%s,%s,%s,%s,%s)"
         try:
             curr = conn.cursor()
             curr.execute(query,(content,userId,current_time,0,0,None))
+            conn.commit()
+
+            return jsonify({"message": "Successfully added tweet to db"}),200
 
 
         except Exception as e:
-            return {"message": e},400
-        
+            print("Error Posting tweet  : ", e)
+            return jsonify({"message": "FAILED to post tweet"}),500
+
+
+
         finally:
-            db.close()
-        
+            conn.close()          
     
 
 @app.route('/api/data', methods=['GET'])
