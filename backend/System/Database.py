@@ -8,7 +8,8 @@ class Database:
         load_dotenv()
         self.conn = None
 
-    def get_db_connection(self):
+    def get_connection(self):
+        print("getting connection from db")
         try:
             print("getting connection from db")
             conn = psycopg2.connect(
@@ -18,16 +19,11 @@ class Database:
                 host=os.getenv("DB_HOST"),
                 port=os.getenv("DB_PORT")
             )
-            self.conn = conn
+            return conn
+
         except Exception as e:
             print(f"Error connecting to the database: {e}")
-            self.conn = None
-    
-    def get_connection(self):
-        print("getting connection from db")
-        if self.conn is None:
-            self.get_db_connection()
-        return self.conn
+            return None
     def close(self):
         if self.conn:
             self.conn.close()

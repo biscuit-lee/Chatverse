@@ -18,12 +18,15 @@ db = Database()
 @app.route('/api/tweets',methods=["GET","POST"])
 def handle_tweets():
     if request.method == "GET":
-        print("sending tweets")
+        print("api/tweets (GET) called")
+
         return jsonify(tweets)
 
 
     # This handles if a user wants to post a tweet
     if request.method == "POST":
+        print("api/tweets (POST) called")
+
         conn = db.get_connection()
 
         
@@ -62,10 +65,37 @@ def handle_tweets():
 
 @app.route('/api/data', methods=['GET'])
 def get_data():
-    data = {
-        'message': 'Hello from the backend!'
-    }
-    return jsonify(data)
+
+    print("api/data called")
+    # Fetch from db
+    conn = db.get_connection()
+
+    if conn is None:
+        return jsonify({"message ": "Failed to connect to database"}),500
+
+    try:
+        curr = conn.cursor()
+        curr.execute("SELECT * FROM tweets")
+        
+        res = curr.fetchall()
+
+        colnames = [desc[0] for desc in curr.description]
+        result = [dict(zip(colnames, row)) for row in res]
+
+        print("colname ", colnames)
+        print("res ", result)
+
+        return jsonify(result),200
+
+
+
+        
+    except Exception as e:
+        return jsonify({"message": e}),500
+    
+    finally:
+        conn.close()
+
 
 @app.route('/api/login',methods=["POST"])
 def login_verify():
@@ -99,7 +129,7 @@ def login_verify():
             return (jsonify({"message" : f"error during query {str(e)}"},500))
 
         finally:
-            db.close()
+            conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
