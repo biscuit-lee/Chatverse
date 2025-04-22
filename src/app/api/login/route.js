@@ -36,5 +36,5 @@ export async function POST(request){
             {error: "FAILED"},
             {status: 500})
     }
-    //console.log(data);
+
 }

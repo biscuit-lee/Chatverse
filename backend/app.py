@@ -31,7 +31,6 @@ def handle_tweets():
 
         
         if conn is None:
-            print("Conn is none")
             return jsonify({"message": "FAILED to connect to database"}),500
         
 
@@ -41,7 +40,6 @@ def handle_tweets():
         content = data["content"]
 
         if not userId or not content:
-            print("user id and content not exist")
             return jsonify({"message" : "Post request fail"}),400
         
         query = "INSERT INTO tweets (text,author_id,timestamp,likes,comment_amount,parent_tweet_id) values (%s,%s,%s,%s,%s,%s)"
@@ -54,7 +52,6 @@ def handle_tweets():
 
 
         except Exception as e:
-            print("Error Posting tweet  : ", e)
             return jsonify({"message": "FAILED to post tweet"}),500
 
 
@@ -82,9 +79,6 @@ def get_data():
         colnames = [desc[0] for desc in curr.description]
         result = [dict(zip(colnames, row)) for row in res]
 
-        print("colname ", colnames)
-        print("res ", result)
-
         return jsonify(result),200
 
 
@@ -96,6 +90,91 @@ def get_data():
     finally:
         conn.close()
 
+@app.route('/api/addlike',methods=["POST"])
+def add_like():
+    if request.method == "POST":
+        print("add like api called")
+        conn = db.get_connection()
+
+        if conn is None:
+            return jsonify({"message :" "Failed to connect to database"},500)
+        
+        data = request.get_json()
+        print("DATA SENT TO LIKE API ",data)
+        tweetid = data["tweetId"]
+        userId = data["userId"]
+
+        print(f"add like api called with userid {userId} and tweetid {tweetid}")
+        query_addlike = "UPDATE tweets SET likes = likes + 1 WHERE id = %s" 
+        query_userLike = "INSERT into likes "
+        try:
+            curr = conn.cursor()
+            curr.execute(query_addlike,(tweetid,))
+
+            conn.commit()
+            return jsonify({"message": "Successfully liked the tweet"}),200
+        except Exception as e:
+            return jsonify({"Message ": e}),500
+
+@app.route("/api/<int:post_id>/handleComment",methods=["POST","GET"])
+def handleComment(post_id):
+
+    if (request.method == "POST"):
+        print("api/HANDLETWEET (POST) called")
+
+        conn = db.get_connection()
+        data = request.get_json()
+        comment = data["content"]
+        user_id = data["userId"]
+        tweet_id = data["tweetId"]
+        
+        query ="INSERT INTO comments (tweet_id,user_id, content, created_at, parent_comment_id, likes) VALUES (%s,%s,%s,%s,%s,%s)"
+        try:
+            curr = conn.cursor()
+            curr.execute(query,(tweet_id,user_id,comment,datetime.datetime.now(),None,0))
+            curr.commit()
+            return jsonify({"Message": "Successfully added comment"}),200
+        except Exception as e:
+            return jsonify({"Message ": e}),500
+    
+    if(request.method == "GET"):
+        print("api/HANDLETWEET (GET) called")
+
+        conn = db.get_connection()
+        query = "SELECT * FROM comments where tweet_id = %s"
+        try:
+            curr = conn.cursor()
+            curr.execute(query,(post_id,))
+            res = curr.fetchall()
+
+            print("FETCHED DATA",res)
+                
+            colnames = [desc[0] for desc in curr.description]
+            result = [dict(zip(colnames, row)) for row in res]
+            
+            print("CLEANED FETCH DATA",result)
+            return jsonify(result),200
+        
+        except Exception as e:
+            return jsonify({"Message": e}),500
+
+@app.route("/api/follow",methods=["POST"])
+def add_follower():
+    conn = db.get_connection()
+    data = requests.get_json()
+    follower_id = data["follower_id"]
+    following_id = data["following_id"]
+
+    query = " INSERT INTO followings (following_id, follower_id) VALUES (%s,%s)"
+
+    try:
+        curr = conn.cursor()
+        curr.execute(query,(following_id,follower_id))
+        curr.commit()
+
+        return jsonify({"message": "Successfully added follwer"}),200
+    except Exception as e:
+        return jsonify({"message " : e}),500
 
 @app.route('/api/login',methods=["POST"])
 def login_verify():
@@ -103,29 +182,24 @@ def login_verify():
         conn = db.get_connection()
         
         if conn is None:
-            return jsonify({"message :" "FAILED to connect to database"},500)
+            return jsonify({"message ": "FAILED to connect to database"}),500
         
         data = request.get_json()
         username = data['username']
         password = data['password']
-        print(f"EYO BOSS WE GOT A HOME BOY CALLED {username} with pass {password}")
         query = "SELECT * from users where username = 'john' AND passhash ='123' "
         try:
             curr = conn.cursor()
             curr.execute(query)
             res = curr.fetchone()
-            print("FETCHIN the user")
             if res:
-                print("WE FOUND THE HOMEBOY")
                 return jsonify({"message ": "Logged in successfully "}),200
             else:
-                print("WE AINT FIND THE HOMEBOY")
                 return jsonify({"message ": "Login failed , Cannot find user "}),401
                 
             
         except Exception as e:
             
-            print(f"SOMETHING WRONG ABOUT THE QUERY : {e}")
             return (jsonify({"message" : f"error during query {str(e)}"},500))
 
         finally:
