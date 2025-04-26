@@ -4,7 +4,7 @@ export async function POST(request){
         const data = await request.json();
 
 
-        const res = fetch("http://localhost:5000//api/addlike",{
+        const res = fetch("http://localhost:5000/api/addlike",{
             "method":"POST",
             "headers": {"Content-Type":"application/json"},
             "body" : JSON.stringify(data)

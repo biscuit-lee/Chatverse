@@ -4,11 +4,20 @@ import { VscComment } from "react-icons/vsc";
 import { useEffect, useState } from "react"
 import { IoMdArrowDropdown } from "react-icons/io";
 import { comment } from 'postcss';
+import Link from 'next/link';
 
 export default function Tweet({tweet,setTweet}){
 
     const [comments,setComment] = useState([])
     
+    async function requestProfile(user_id){
+        const res = await fetch(`http://localhost:3000/api/users/${user_id}`)
+
+        if (res.ok){
+            const data = await res.json();
+        }
+    }
+
     async function addLike(tweetId){
         const res = await fetch("http://localhost:3000/api/addlike",{
             "method" : "POST",
@@ -67,8 +76,20 @@ export default function Tweet({tweet,setTweet}){
         
         <div key={tweet.id} className="border-r-2 border-l-2 border-t-2">
         <div className="flex space-x-4 mt-5 px-2">
-            <h1 className="text-black "> {tweet.author_id} </h1>
-            <h3> {tweet.timestamp}</h3>
+            
+            <h1 className="text-black "> 
+                
+           {/*  <div onClick={() => {requestProfile(tweet.user_id)}} className='hover:underline cursor-pointer'>
+                <b>{tweet.username}</b> 
+            </div> */}
+
+            <Link className="hover:underline" href={`/users/${tweet.author_id}`}>
+                <b>{tweet.username}</b>
+            </Link>
+
+            </h1>
+            
+            <h3 className='text-gray-500'> {tweet.timestamp}</h3>
         </div>
         <div>
             <h2 className="m-2 px-2"> {tweet.text} </h2>

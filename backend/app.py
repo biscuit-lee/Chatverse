@@ -18,14 +18,12 @@ db = Database()
 @app.route('/api/tweets',methods=["GET","POST"])
 def handle_tweets():
     if request.method == "GET":
-        print("api/tweets (GET) called")
 
         return jsonify(tweets)
 
 
     # This handles if a user wants to post a tweet
     if request.method == "POST":
-        print("api/tweets (POST) called")
 
         conn = db.get_connection()
 
@@ -63,7 +61,6 @@ def handle_tweets():
 @app.route('/api/data', methods=['GET'])
 def get_data():
 
-    print("api/data called")
     # Fetch from db
     conn = db.get_connection()
 
@@ -72,13 +69,14 @@ def get_data():
 
     try:
         curr = conn.cursor()
-        curr.execute("SELECT * FROM tweets")
+        curr.execute("SELECT tweets.*,users.username FROM tweets JOIN users ON tweets.author_id = users.id")
         
         res = curr.fetchall()
 
         colnames = [desc[0] for desc in curr.description]
         result = [dict(zip(colnames, row)) for row in res]
 
+        #print(result)
         return jsonify(result),200
 
 
@@ -93,18 +91,15 @@ def get_data():
 @app.route('/api/addlike',methods=["POST"])
 def add_like():
     if request.method == "POST":
-        print("add like api called")
         conn = db.get_connection()
 
         if conn is None:
             return jsonify({"message :" "Failed to connect to database"},500)
         
         data = request.get_json()
-        print("DATA SENT TO LIKE API ",data)
         tweetid = data["tweetId"]
         userId = data["userId"]
 
-        print(f"add like api called with userid {userId} and tweetid {tweetid}")
         query_addlike = "UPDATE tweets SET likes = likes + 1 WHERE id = %s" 
         query_userLike = "INSERT into likes "
         try:
@@ -116,11 +111,44 @@ def add_like():
         except Exception as e:
             return jsonify({"Message ": e}),500
 
+@app.route("/api/users/<int:user_id>", methods=["GET","POST"])
+def handle_userProfile(user_id):
+    if (request.method == "GET"):
+        print("USER : " + str(user_id) + " API FETCH CALLED ")
+        conn = db.get_connection()
+        
+        query = "SELECT * FROM users WHERE id = %s"
+        query_for_tweet = "SELECT * FROM tweets where author_id = %s"
+
+        try:
+            curr = conn.cursor()
+            curr.execute(query, (user_id,))
+            res = curr.fetchall()  # This returns a list of tuple (example. [(1, "John", "john@example.com"),(...)])
+            
+
+            colnames = [desc[0] for desc in curr.description]
+
+            curr.execute(query_for_tweet,(user_id,))
+            res2 = curr.fetchall()
+            colnames_tweet= [desc[0] for desc in curr.description]
+
+            user_data = [dict(zip(colnames, row)) for row in res]
+            tweet_data = [dict(zip(colnames_tweet,row)) for row in res2]
+            
+            # add tweets to the user
+            if user_data:
+                user_data[0]["tweets"] = tweet_data
+
+            print(user_data)
+
+            return jsonify(user_data),200
+        except Exception as e:
+            return jsonify({"Message ": e}),500
+
 @app.route("/api/<int:post_id>/handleComment",methods=["POST","GET"])
 def handleComment(post_id):
 
     if (request.method == "POST"):
-        print("api/HANDLETWEET (POST) called")
 
         conn = db.get_connection()
         data = request.get_json()
@@ -138,7 +166,6 @@ def handleComment(post_id):
             return jsonify({"Message ": e}),500
     
     if(request.method == "GET"):
-        print("api/HANDLETWEET (GET) called")
 
         conn = db.get_connection()
         query = "SELECT * FROM comments where tweet_id = %s"
@@ -147,12 +174,9 @@ def handleComment(post_id):
             curr.execute(query,(post_id,))
             res = curr.fetchall()
 
-            print("FETCHED DATA",res)
-                
             colnames = [desc[0] for desc in curr.description]
             result = [dict(zip(colnames, row)) for row in res]
             
-            print("CLEANED FETCH DATA",result)
             return jsonify(result),200
         
         except Exception as e:
