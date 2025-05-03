@@ -56,7 +56,7 @@ export default function HomePage(){
     return(
         <div className="flex-1 ml-97 p-8 w-1/2">            
             <form onSubmit={postTweet} className="flex"> 
-                <input autoComplete="off" placeholder="What's poppin" type="text" class="w-3/4 max-w-xl h-16 bg-transparent border-none outline-none text-left text-lg"
+                <input autoComplete="off" placeholder="What's poppin" name="tweet" type="text" class="w-3/4 max-w-xl h-16 bg-transparent border-none outline-none text-left text-lg"
 
                 ></input>
                 <button className="bg-blue-500 text-white h-14 px-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"> Post </button>
@@ -65,7 +65,7 @@ export default function HomePage(){
             
             <div className="">
                 {tweets.map((tweet,index) =>(
-                    <Tweet tweet={tweet} setTweet={setTweet}/>
+                    <Tweet tweet={tweet} setTweet={setTweet} isComment={false}/>
 
                 ))}
 

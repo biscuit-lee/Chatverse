@@ -5,8 +5,10 @@ import { useEffect, useState } from "react"
 import { IoMdArrowDropdown } from "react-icons/io";
 import { comment } from 'postcss';
 import Link from 'next/link';
+import { BiSolidDislike } from "react-icons/bi";
 
-export default function Tweet({tweet,setTweet}){
+
+export default function Tweet({tweet,setTweet,isComment}){
 
     const [comments,setComment] = useState([])
     
@@ -40,6 +42,28 @@ export default function Tweet({tweet,setTweet}){
         })
         
     }
+    
+
+    async function add_disLike(tweetId){
+        const res = await fetch("http://localhost:3000/api/dislike",{
+            "method" : "POST",
+            "headers": {"Content-Type":"application/json"},
+            "body": JSON.stringify({"tweetId":tweetId, "userId":1})
+
+        })
+
+
+        setTweet((prev) => {
+            return prev.map(post => {
+                if (post.id === tweetId){
+                    return{...post,dislike: post.dislike + 1};   // This creates a new obj with everything the same in post except the likes column that we added 1 to
+                }
+                return post
+            })
+        })
+        
+    }
+
 
     async function addComment(tweetId, content){
         const res = await fetch(`http://localhost:3000/api/${tweetId}/addcomment`,{
@@ -58,16 +82,23 @@ export default function Tweet({tweet,setTweet}){
 
         const data = await res.json()
         if (res.ok){
+            // If theres no comments to display
             if (Array.isArray(data) && data.length === 0) {
-                setComment([{"content" : "No Comments to display!"}])
+                
+                setComment([])
                 //console.log("No comments found");
             }else{
-                setComment(data)
+                if ( isComment === true){
+                    
+                    setComment([])
+                }else{
+                    setComment(data)
+                }
 
             }
             //console.log(data)
         }else{
-            setComment([{"content" : "Error fetching comments"}])
+            setComment([])
         }
     }
 
@@ -98,15 +129,42 @@ export default function Tweet({tweet,setTweet}){
             <CiHeart onClick={() => {addLike(tweet.id)}} className="w-6 h-6 mt-2 cursor-pointer text-red-500 hover:scale-110 transition-transform duration-200"/>
             <p className="select-none w-6 h-6 ml-2 mt-2 mb-2"> {tweet.likes} </p>
 
-            <VscComment onClick={() => {addComment(tweet.id)}}  className="w-6 h-6 mt-2 cursor-pointer hover:scale-110 transition-transform duration-200"/>
-            <p className="select-none w-6 h-6 ml-2 mt-2 mb-2"> {tweet.comment_amount}  </p>
+            <BiSolidDislike onClick={() => {add_disLike(tweet.id)}} className="w-6 h-6 mt-2 cursor-pointer text-red-500 hover:scale-110 transition-transform duration-200"/>
+            <p className="select-none w-6 h-6 ml-2 mt-2 mb-2"> {tweet.dislike} </p>
 
-            <IoMdArrowDropdown onClick={()=> {getComment(tweet.id)}} className="w-6 h-6 mt-2 cursor-pointer hover:scale-110 transition-transform duration-200"/>
+            {!isComment && (
+            <>
+                <VscComment 
+                onClick={() => addComment(tweet.id)}  
+                className="w-6 h-6 mt-2 cursor-pointer hover:scale-110 transition-transform duration-200"
+                />
+                <p className="select-none w-6 h-6 ml-2 mt-2 mb-2">
+                {tweet.comment_amount}
+                </p>
+                <IoMdArrowDropdown 
+                onClick={() => getComment(tweet.id)} 
+                className="w-6 h-6 mt-2 cursor-pointer hover:scale-110 transition-transform duration-200" 
+                />
+            </>
+            )}
+
            
         </div>
+        
+        <div className="div">
+            
+        </div>
 
-        {comments.map((comment,index) => (
-            <p key={index}> {comment.content} </p>
+        {comments.length > 0 && comments.map((comment,index) => (
+            
+            <div className="ml-10">
+                
+                <h1 className='m-2'>Replies</h1>
+                
+                <Tweet tweet={comment} setTweet={setComment} isComment={true}/>
+            </div>
+            
+        
         ))}
 
         

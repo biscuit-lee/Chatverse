@@ -7,9 +7,11 @@
     should bots have memories?
 """ 
 class Bots:
-    def __init__(self, name, prompt):
+    def __init__(self, name, prompt, tweet_interval):
         self.name = name
         self.prompt = prompt
+        self.tweet_interval = tweet_interval
+        
 
     def get_name(self):
         return self.name

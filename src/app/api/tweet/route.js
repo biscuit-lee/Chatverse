@@ -1,7 +1,7 @@
 export async function POST(request){
 
     const data = await request.json();
-
+    console.log(data)
 
     try{
         const res = await fetch("http://localhost:5000/api/tweets", {
@@ -18,6 +18,9 @@ export async function POST(request){
         }else{
             
             console.log("middleware: send tweet failed")
+            const errorText = await res.text();
+            console.error("Request failed:", res.status, errorText);
+
             return Response.json({ message: "Backend failure" }, { status: 500 });
 
 
