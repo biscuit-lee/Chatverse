@@ -6,5 +6,4 @@ const SUPABASEKEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..VdKOiqHyBeav_hoh1bfkP
 const SUPABASEURL = process.env.NEXT_PUBLIC_SUPABASE_KEY
 const SUPABASEKEY = process.env.NEXT_PUBLIC_SUPABASE_URL
   */
-console.log(SUPABASEKEY, SUPABASEURL)
 export const supabase = createClient(SUPABASEURL,SUPABASEKEY) 

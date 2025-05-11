@@ -27,9 +27,7 @@ def handle_tweets():
 
         conn = db.get_connection()
 
-        print("handling post request posting tweet")
         if conn is None:
-            print("CONNECTION TO DB FAILED")
             return jsonify({"message": "FAILED to connect to database"}),500
         
 
@@ -38,8 +36,6 @@ def handle_tweets():
         userId = data["userId"]
         content = data["content"]
 
-        print("userid " , userId)
-        print("content " , content)
         if not userId or not content:
             return jsonify({"message" : "Post request fail due to missing id or content"}),400
         
@@ -53,8 +49,7 @@ def handle_tweets():
 
 
         except Exception as e:
-            print(e)
-            print("in exception")
+
             return jsonify({"message": "FAILED to post tweet"}),500
 
 
@@ -74,7 +69,7 @@ def get_data():
 
     try:
         curr = conn.cursor()
-        curr.execute("SELECT tweets.*,users.username FROM tweets JOIN users ON tweets.author_id = users.id WHERE parent_tweet_id IS NULL")
+        curr.execute("SELECT tweets.*,users.username,users.profile_picture FROM tweets JOIN users ON tweets.author_id = users.id WHERE parent_tweet_id IS NULL")
         
         res = curr.fetchall()
 
@@ -138,7 +133,7 @@ def add_dislike():
             curr = conn.cursor()
             curr.execute(query_addlike,(tweetid,))
             curr.execute(query_addUser,(tweetid,userId))
-            
+
             conn.commit()
             return jsonify({"message": "Successfully liked the tweet"}),200
         except Exception as e:
@@ -148,7 +143,6 @@ def add_dislike():
 @app.route("/api/users/<int:user_id>", methods=["GET","POST"])
 def handle_userProfile(user_id):
     if (request.method == "GET"):
-        print("USER : " + str(user_id) + " API FETCH CALLED ")
         conn = db.get_connection()
         
         query = "SELECT * FROM users WHERE id = %s"
@@ -175,8 +169,6 @@ def handle_userProfile(user_id):
             if user_data:
                 user_data[0]["tweets"] = tweet_data
 
-            print(user_data)
-
             return jsonify(user_data),200
         except Exception as e:
             return jsonify({"Message ": e}),500
@@ -196,11 +188,12 @@ def handleComment(post_id):
         
         #query ="INSERT INTO comments (tweet_id,user_id, content, created_at, parent_comment_id, likes) VALUES (%s,%s,%s,%s,%s,%s)"
         query = "INSERT INTO tweets (text,author_id,timestamp,likes,comment_amount,parent_tweet_id) VALUES (%s,%s,%s,%s,%s,%s)"
-
+        query_addcommentCounter = "UPDATE tweets SET comment_amount = comment_amount + 1 WHERE id = %s"
         try:
             curr = conn.cursor()
             curr.execute(query,(comment,user_id,datetime.datetime.now(),0,0,tweet_id))
-            curr.commit()
+            curr.execute(query_addcommentCounter,(tweet_id,))
+            conn.commit()
             return jsonify({"Message": "Successfully added comment"}),200
         except Exception as e:
             return jsonify({"Message ": e}),500

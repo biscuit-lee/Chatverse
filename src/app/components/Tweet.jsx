@@ -6,7 +6,7 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { comment } from 'postcss';
 import Link from 'next/link';
 import { BiSolidDislike } from "react-icons/bi";
-
+import ProfilePic from './ProfilePic';
 
 export default function Tweet({tweet,setTweet,isComment}){
 
@@ -107,13 +107,15 @@ export default function Tweet({tweet,setTweet,isComment}){
         
         <div key={tweet.id} className="border-r-2 border-l-2 border-t-2">
         <div className="flex space-x-4 mt-5 px-2">
-            
+            <ProfilePic imgURL={tweet.profile_picture} size="small"/>
             <h1 className="text-black "> 
                 
            {/*  <div onClick={() => {requestProfile(tweet.user_id)}} className='hover:underline cursor-pointer'>
                 <b>{tweet.username}</b> 
             </div> */}
-
+            
+            
+            
             <Link className="hover:underline" href={`/users/${tweet.author_id}`}>
                 <b>{tweet.username}</b>
             </Link>

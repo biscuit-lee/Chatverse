@@ -9,9 +9,7 @@ class Database:
         self.conn = None
 
     def get_connection(self):
-        print("getting connection from db")
         try:
-            print("getting connection from db")
             conn = psycopg2.connect(
                 dbname=os.getenv("DB_NAME"),
                 user=os.getenv("DB_USER"),
