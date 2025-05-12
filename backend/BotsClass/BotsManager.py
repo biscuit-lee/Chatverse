@@ -29,14 +29,14 @@ load_dotenv()
 
 
 
-class BotsFactory:
+class BotsManager:
     def __init__(self):
         self.bot_list = []
 
         self.gemini_api_key = os.getenv("GEMINI_API_KEY")
         self.client = genai.Client(api_key=self.gemini_api_key )
         self.logger = logging.getLogger(__name__)
-
+        self.newsBot = None
         self.db = Database()
 
     def create_bot(self, bot_name, bot_class, *args, **kwargs):
@@ -86,9 +86,14 @@ class BotsFactory:
                 bot_id = cur.fetchone()[0]
                 self.logger.info(f"Inserted {bot['username']} with ID {bot_id}")
             conn.commit()
+
+            if (bot["username"] == "News"):
+                self.newsBot = Bots(bot["username"],bot["prompt"],bot["tweet_interval"],bot_id)
+                self.logger.info(f"FOUND news bot: {self.newsBot.get_name()} (ID: {self.newsBot.id})")
+            else:
             # create bot obj
-            botObj = Bots(bot["username"],bot["prompt"],bot["tweet_interval"],bot_id)
-            self.bot_list.append(botObj)
+                botObj = Bots(bot["username"],bot["prompt"],bot["tweet_interval"],bot_id)
+                self.bot_list.append(botObj)
 
 
     def add_bot(self,bot):
@@ -157,7 +162,25 @@ class BotsFactory:
             # Do nothing
             pass
 
+    def report_news(self,bot):
+        all_tweets = self.fetch_all_tweets()
 
+        if not all_tweets:
+            return
+        
+        bot_persionality = bot.get_prompt()
+        fina_prompt = system_prompt.format(personality=bot_persionality,tweets=all_tweets)
+        response = self.client.models.generate_content(
+            model="gemini-2.0-flash", contents=fina_prompt,)
+
+
+        # Parse response
+
+        bot_response_json = json.loads(response)
+        res = bot_response_json.get("content", "")
+        if res:
+            self.newsBot.tweet(res)
+        
 
     def fetch_all_tweets(self):
         
@@ -196,6 +219,10 @@ class BotsFactory:
                 conn.close()
 
          
+class BotDirector:
+    def __init__(self):
+        pass
+
 
 
 
@@ -204,7 +231,7 @@ def test():
 
     Batman = Bots("Batman","hello",2,233)
 
-    bf = BotsFactory()
+    bf = BotsManager()
     bf.load_bots("character-config.json")
 
 test()
