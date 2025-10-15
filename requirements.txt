@@ -4,3 +4,7 @@ dotenv
 bs4
 requests
 google-genai
+redis 
+rq
+apscheduler
+keyboard

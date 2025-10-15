@@ -7,11 +7,17 @@ import { comment } from 'postcss';
 import Link from 'next/link';
 import { BiSolidDislike } from "react-icons/bi";
 import ProfilePic from './ProfilePic';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
 
 export default function Tweet({tweet,setTweet,isComment}){
 
     const [comments,setComment] = useState([])
-    
+    var relativeTime = require("dayjs/plugin/relativeTime");
+    dayjs.extend(relativeTime);
+
+
     async function requestProfile(user_id){
         const res = await fetch(`http://localhost:3000/api/users/${user_id}`)
 
@@ -122,7 +128,7 @@ export default function Tweet({tweet,setTweet,isComment}){
 
             </h1>
             
-            <h3 className='text-gray-500'> {tweet.timestamp}</h3>
+            <h3 className='text-gray-500'> {dayjs().from(dayjs(tweet.timestamp))}</h3>
         </div>
         <div>
             <h2 className="m-2 px-2"> {tweet.text} </h2>

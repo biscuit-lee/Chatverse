@@ -5,6 +5,19 @@ from flask import Flask, jsonify, request
 
 import datetime
 from System.Database import Database
+#from BotsClass.BotsManager import trigger_react
+from backend.BotsClass.BotsManager import trigger_react
+
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    handlers=[
+        logging.FileHandler("app.log"),      # logs to a file
+        logging.StreamHandler()              # also prints to terminal
+    ]
+)
 
 app = Flask(__name__)
 
@@ -69,7 +82,7 @@ def get_data():
 
     try:
         curr = conn.cursor()
-        curr.execute("SELECT tweets.*,users.username,users.profile_picture FROM tweets JOIN users ON tweets.author_id = users.id WHERE parent_tweet_id IS NULL")
+        curr.execute("SELECT tweets.*,users.username,users.profile_picture FROM tweets JOIN users ON tweets.author_id = users.id WHERE parent_tweet_id IS NULL ORDER BY tweets.timestamp DESC")
         
         res = curr.fetchall()
 
@@ -83,7 +96,7 @@ def get_data():
 
         
     except Exception as e:
-        return jsonify({"message": e}),500
+        return jsonify({"message": str(e)}),500
     
     finally:
         conn.close()
@@ -91,10 +104,7 @@ def get_data():
 @app.route('/api/addlike',methods=["POST"])
 def add_like():
     if request.method == "POST":
-        conn = db.get_connection()
-
-        if conn is None:
-            return jsonify({"message :" "Failed to connect to database"},500)
+        
         
         data = request.get_json()
         tweetid = data["tweetId"]
@@ -103,6 +113,10 @@ def add_like():
         query_addlike = "UPDATE tweets SET likes = likes + 1 WHERE id = %s" 
         query_addUser = "INSERT into likes (tweet_id,user_id) VALUES (%s,%s)"
         try:
+            conn = db.get_connection()
+
+            if conn is None:
+                return jsonify({"message ": "Failed to connect to database"},500)
             # Update likes
             curr = conn.cursor()
             curr.execute(query_addlike,(tweetid,))
@@ -113,31 +127,40 @@ def add_like():
             conn.commit()
             return jsonify({"message": "Successfully liked the tweet"}),200
         except Exception as e:
+            logging.exception(f"Error while adding like: {e}")
             return jsonify({"Message ": e}),500
+        finally:
+            conn.close()
 
 @app.route('/api/dislike',methods=["POST"])
 def add_dislike():
     if request.method == "POST":
-        conn = db.get_connection()
-
-        if conn is None:
-            return jsonify({"message :" "Failed to connect to database"},500)
         
         data = request.get_json()
         tweetid = data["tweetId"]
         userId = data["userId"]
 
+        logging.info(f"User {userId} is trying to dislike tweet {tweetid}")
+
         query_addlike = "UPDATE tweets SET dislike = dislike + 1 WHERE id = %s" 
         query_addUser = "INSERT into dislikes (tweet_id,user_id) VALUES (%s,%s)"
         try:
+            conn = db.get_connection()
+
+            if conn is None:
+                return jsonify({"message ": "Failed to connect to database"},500)
+
             curr = conn.cursor()
             curr.execute(query_addlike,(tweetid,))
             curr.execute(query_addUser,(tweetid,userId))
-
+            logging.info(f"User {userId} disliked tweet {tweetid}")
             conn.commit()
-            return jsonify({"message": "Successfully liked the tweet"}),200
+            return jsonify({"message" : "Successfully liked the tweet"}),200
         except Exception as e:
+            logging.exception(f"Error while adding dislike: {e}")
             return jsonify({"Message ": e}),500
+        finally:
+            conn.close()
 
 
 @app.route("/api/users/<int:user_id>", methods=["GET","POST"])
@@ -180,33 +203,38 @@ def handleComment(post_id):
 
     if (request.method == "POST"):
 
-        conn = db.get_connection()
         data = request.get_json()
         comment = data["content"]
         user_id = data["userId"]
         tweet_id = data["tweetId"]
         
+        logging.info(f"User {user_id} ({type(user_id)}) is trying to comment on tweet {tweet_id} ({type(tweet_id)}) with content: {comment} ({type(comment)})")
         #query ="INSERT INTO comments (tweet_id,user_id, content, created_at, parent_comment_id, likes) VALUES (%s,%s,%s,%s,%s,%s)"
         query = "INSERT INTO tweets (text,author_id,timestamp,likes,comment_amount,parent_tweet_id) VALUES (%s,%s,%s,%s,%s,%s)"
         query_addcommentCounter = "UPDATE tweets SET comment_amount = comment_amount + 1 WHERE id = %s"
         try:
+            conn = db.get_connection()
             curr = conn.cursor()
             curr.execute(query,(comment,user_id,datetime.datetime.now(),0,0,tweet_id))
             curr.execute(query_addcommentCounter,(tweet_id,))
             conn.commit()
             return jsonify({"Message": "Successfully added comment"}),200
         except Exception as e:
-            return jsonify({"Message ": e}),500
+            logging.exception(f"Error while adding comment: {e}")
+            return jsonify({"Message ": str(e)}),500
+        finally:
+            conn.close()
     
     if(request.method == "GET"):
 
-        conn = db.get_connection()
         #query = "SELECT * FROM comments where tweet_id = %s"
         #query_for_tweet = "SELECT tweets.*,users.username FROM tweets JOIN users ON tweets.author_id = users.id WHERE author_id = %s"
 
-        query = "SELECT tweets.*,users.username FROM tweets JOIN users ON tweets.author_id = users.id WHERE parent_tweet_id = %s"
+        query = "SELECT tweets.*,users.username,users.profile_picture FROM tweets JOIN users ON tweets.author_id = users.id WHERE parent_tweet_id = %s ORDER BY tweets.timestamp DESC"
 
         try:
+            conn = db.get_connection()
+
             curr = conn.cursor()
             curr.execute(query,(post_id,))
             res = curr.fetchall()
@@ -217,11 +245,13 @@ def handleComment(post_id):
             return jsonify(result),200
         
         except Exception as e:
-            return jsonify({"Message": e}),500
+            return jsonify({"Message": str(e)}),500
+        
+        finally:
+            conn.close()
 
 @app.route("/api/follow",methods=["POST"])
 def add_follower():
-    conn = db.get_connection()
     data = requests.get_json()
     follower_id = data["follower_id"]
     following_id = data["following_id"]
@@ -229,6 +259,8 @@ def add_follower():
     query = " INSERT INTO followings (following_id, follower_id) VALUES (%s,%s)"
 
     try:
+        conn = db.get_connection()
+
         curr = conn.cursor()
         curr.execute(query,(following_id,follower_id))
         curr.commit()
@@ -236,6 +268,8 @@ def add_follower():
         return jsonify({"message": "Successfully added follwer"}),200
     except Exception as e:
         return jsonify({"message " : e}),500
+    finally:
+        conn.close()
 
 @app.route('/api/login',methods=["POST"])
 def login_verify():

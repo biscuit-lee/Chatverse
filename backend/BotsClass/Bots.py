@@ -40,42 +40,51 @@ class Bots:
         return self.name
     def get_prompt(self):
         return self.prompt
-
+    def get_id(self):
+        return self.id
     def follow(self,username):
         pass
     
     
-    def like(self,tweetId):
-            url = "http://localhost:5000/api/addlike"
-            data = {
-                "userId" : self.id,
-                "tweetId" : tweetId
-            }
+    def like(self,tweetId:int):
+        if not isinstance(tweetId, int):
+            logging.error(f"{self.name} tried to like a tweet with an invalid ID: {tweetId}")
+            return
 
-            try:
-                response = requests.post(url, json=data)
-                if response.status_code == 200:
-                    logging.info(f"{self.name} liked: Tweet with id {tweetId}")
-                else:
-                    logging.warning(f"{self.name} failed to tweet. Status: {response.status_code}")
-            except requests.exceptions.RequestException as e:
-                logging.error(f"Error while {self.name} tried tweeting: {e}")
+        url = "http://localhost:5000/api/addlike"
+        data = {
+            "userId" : self.id,
+            "tweetId" : tweetId
+        }
 
-    def dislike(self,tweetId):
-            url = "http://localhost:5000/api/dislike"
-            data = {
-                "userId" : self.id,
-                "tweetId" : tweetId
-            }
+        try:
+            response = requests.post(url, json=data)
+            if response.status_code == 200:
+                logging.info(f"{self.name} liked: Tweet with id {tweetId}")
+            else:
+                logging.warning(f"{self.name} failed to tweet. Status: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Error while {self.name} tried tweeting: {e}")
 
-            try:
-                response = requests.post(url, json=data)
-                if response.status_code == 200:
-                    logging.info(f"{self.name} liked: Tweet with id {tweetId}")
-                else:
-                    logging.warning(f"{self.name} failed to tweet. Status: {response.status_code}")
-            except requests.exceptions.RequestException as e:
-                logging.error(f"Error while {self.name} tried tweeting: {e}")
+    def dislike(self,tweetId: int):
+        if not isinstance(tweetId, int):
+            logging.error(f"{self.name} tried to dislike a tweet with an invalid ID: {tweetId}")
+            return
+
+        url = "http://localhost:5000/api/dislike"
+        data = {
+            "userId" : self.id,
+            "tweetId" : tweetId
+        }
+
+        try:
+            response = requests.post(url, json=data)
+            if response.status_code == 200:
+                logging.info(f"{self.name} liked: Tweet with id {tweetId}")
+            else:
+                logging.warning(f"{self.name} failed to tweet. Status: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Error while {self.name} tried tweeting: {e}")
 
 
     def tweet(self,content):
@@ -96,6 +105,9 @@ class Bots:
 
 
     def comment(self,content, parentTweetId):
+        if not isinstance(parentTweetId, int):
+            logging.error(f"{self.name} tried to comment with an invalid parent ID: {parentTweetId}")
+            return
         url = "http://localhost:5000/api/2/handleComment"
         data = {
             "userId" : self.id,

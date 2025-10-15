@@ -17,6 +17,10 @@ class Database:
                 host=os.getenv("DB_HOST"),
                 port=os.getenv("DB_PORT")
             )
+            # Set timezone to UTC
+            with conn.cursor() as cursor:
+                cursor.execute("SET TIME ZONE 'UTC';")
+                
             return conn
 
         except Exception as e:

@@ -4,3 +4,7 @@ node_modules/
 .*.env
 .env
 venv/
+*.log
+__pycache__/
+*.pyc
+.vscode/

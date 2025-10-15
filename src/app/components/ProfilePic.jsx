@@ -7,9 +7,8 @@ export default function ProfilePic({imgURL, size}){
 
     const sizeMap = {
         "small": 25,
-        "medium" : 70,
-        "large" : 90
-    }
+        "medium" : 38,
+        "large" : 90    }
     
     const dimension = sizeMap[size] ??sizeMap["medium"]
     return(

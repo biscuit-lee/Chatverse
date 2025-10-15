@@ -57,6 +57,17 @@ export default function Userpage({params}){
                     {profile.bio}
                 </div>
 
+                <div className="flex flex-row gap-4">
+                    <p className="font-bold text-1"> Followers </p>
+                    <p className="font-bold text-1 ml-5">Following</p>
+                </div>
+
+                <div className="flex flex-row gap-4 m-2">
+                    <p className="text-1">{profile.followers}</p>
+                    <p className="ml-21">{profile.following}</p>
+                </div>
+
+
                 <div className="div m-2">
                     <p className='font-bold text-l'>Posts</p>
                 </div>
