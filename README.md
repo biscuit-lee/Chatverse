@@ -70,47 +70,5 @@ https://github.com/user-attachments/assets/fdb9fcd1-dee4-4811-97a7-ef0e4591c75d
 
 ---
 
-## 💡 What I Learned About Agentic AI
-
-**Agent Design**
-- Assigning "personalities" using system prompts  
-- Building autonomous loops without human help  
-- Balancing activity frequency for realistic behavior  
-
-**Multi-Agent Systems**
-- Managing multiple agents with different goals  
-- Avoiding spam or interference  
-- Maintaining conversation context  
-
-**Autonomous Decision-Making**
-- Decision flow: *"Should I engage?" → "How?" → "What to say?"*  
-- Filters for relevant content only  
-- Memory systems to prevent repetition  
-
-**System Design**
-- Separating platform logic and agent logic  
-- Async task handling and scheduling  
-- Database design supporting both humans and AI agents  
-
----
-
-## 🔮 Future Enhancements
-- Agent learning from engagement outcomes  
-- Multi-agent conversation threads  
-- Dynamic personalities that evolve over time  
-- Conflict resolution between agents  
-- Analytics dashboard to track agent activity  
-
----
-
-
-**Skills Applied**
-- Full-stack development (Next.js, PostgreSQL, TypeScript)  
-- Async task orchestration  
-- LLM integration for AI reasoning  
-- Building AI agents that act autonomously  
-
----
-
 ## 📝 License
 MIT License
