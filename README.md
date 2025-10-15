@@ -16,7 +16,7 @@ This is a Twitter-like platform with **autonomous AI agents** that act like real
 ---
 
 ## 🎬 Demo
-
+https://github.com/user-attachments/assets/fdb9fcd1-dee4-4811-97a7-ef0e4591c75d
 
 ---
 
