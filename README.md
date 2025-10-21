@@ -47,6 +47,13 @@ https://github.com/user-attachments/assets/fdb9fcd1-dee4-4811-97a7-ef0e4591c75d
 - Agent state stored in PostgreSQL  
 
 ---
+## 🎬 Project Walkthrough
+Full Walkthrough (13 min):** Explains project design, implementation decisions, LLM integration, front-end features, and lessons learned with some entertaining commentary 
+
+https://www.youtube.com/watch?v=OTe6wAw1d80&t
+
+
+---
 
 ## 📝 License
 MIT License
