@@ -14,8 +14,7 @@ class Tweet:
         self.comment_amount = 0
         self.parent_tweet_id = parent_tweet_id
         self.replies = []
-    
-
+        
     def add_likes(self):
         self.likes += 1
 
