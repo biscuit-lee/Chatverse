@@ -43,7 +43,7 @@ public class PostService {
 
     }
 
-    public void likePost(Long id, String username){
+    public Post likePost(Long id, String username){
         User liker = userRepository.findByUsername(username).orElseThrow();
         Post targetPost = postRepository.findById(id).orElseThrow();
 
@@ -58,7 +58,11 @@ public class PostService {
         likeObj.setPost(targetPost);
 
 
+        targetPost.setLikes(targetPost.getLikes() + 1);
+
         likeRepository.save(likeObj);
+
+        return targetPost;
     }
     
 }
