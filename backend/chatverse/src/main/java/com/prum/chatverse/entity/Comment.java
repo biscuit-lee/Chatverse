@@ -22,8 +22,6 @@ public class Comment {
     private Integer likes;
     
     private Integer dislikes;
-
-    private Integer commentsCount;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

@@ -6,15 +6,18 @@ import org.springframework.web.bind.annotation.*;
 
 import com.prum.chatverse.dto.*;
 import com.prum.chatverse.entity.Post;
+import com.prum.chatverse.service.CommentService;
 import com.prum.chatverse.service.PostService;
 
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
     private final PostService postService;
+    private final CommentService commentService;
 
-    public PostController(PostService postService){
+    public PostController(PostService postService, CommentService commentService){
         this.postService = postService;
+        this.commentService = commentService;
     }
     
     @GetMapping
@@ -38,5 +41,14 @@ public class PostController {
     @PostMapping("/{postId}/dislike")
     public void dislikePost(@PathVariable Long postId, Principal principal){
         String username = principal.getName();
+    }
+
+    @PostMapping("/{postId}/comment")
+    public CommentResponse commnetOnPost(@PathVariable Long postId, 
+        @RequestBody CreateCommentRequest commentRequest,
+        Principal principal)
+    {
+        return commentService.createComment(principal.getName(), postId, commentRequest);
+        
     }
 }

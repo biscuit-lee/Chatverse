@@ -7,3 +7,4 @@ import com.prum.chatverse.entity.Comment;
 public interface CommentRepository extends JpaRepository<Comment,Long>{
     
 } 
+
