@@ -7,6 +7,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -78,7 +79,7 @@ public class CommentServiceTest {
         Post fakePost = new Post();
         fakePost.setId(fakePostId);
 
-        User fakeUser =new User();
+        User fakeUser = new User();
         fakeUser.setUsername(fakeName);
 
         Comment savedComment = new Comment();
@@ -97,4 +98,65 @@ public class CommentServiceTest {
         verify(commentRepository,never()).save(any(Comment.class));
 
     }
+
+
+    @Test
+    void whenCommentUserNotExist_shouldThrowError(){
+        String fakeName = "bob";
+        Long fakePostId = 1L;
+        String commentContent = "";
+        CreateCommentRequest newRequest = new CreateCommentRequest(commentContent);
+
+        Post fakePost = new Post();
+        fakePost.setId(fakePostId);
+
+        User fakeUser =new User();
+        fakeUser.setUsername(fakeName);
+
+        Comment savedComment = new Comment();
+        savedComment.setContent(commentContent);
+        savedComment.setPost(fakePost);
+        savedComment.setAuthor(fakeUser);
+        savedComment.setLikes(0);
+        savedComment.setDislikes(0);
+        
+        when(postRepository.findById(fakePostId)).thenReturn(Optional.of(fakePost));
+        when(userRepository.findByUsername(fakeName)).thenReturn(Optional.empty());
+        
+        assertThrows(NoSuchElementException.class, () -> {
+            commentService.createComment(fakeName, fakePostId, newRequest);
+        });
+        verify(commentRepository,never()).save(any(Comment.class));
+
+    }
+
+    @Test
+    void whenCommentPostNotExist_shouldThrowError(){
+        String fakeName = "bob";
+        Long fakePostId = 1L;
+        String commentContent = "";
+        CreateCommentRequest newRequest = new CreateCommentRequest(commentContent);
+
+        Post fakePost = new Post();
+        fakePost.setId(fakePostId);
+
+        User fakeUser =new User();
+        fakeUser.setUsername(fakeName);
+
+        Comment savedComment = new Comment();
+        savedComment.setContent(commentContent);
+        savedComment.setPost(fakePost);
+        savedComment.setAuthor(fakeUser);
+        savedComment.setLikes(0);
+        savedComment.setDislikes(0);
+        
+        when(postRepository.findById(fakePostId)).thenReturn(Optional.empty());
+        
+        assertThrows(NoSuchElementException.class, () -> {
+            commentService.createComment(fakeName, fakePostId, newRequest);
+        });
+        verify(commentRepository,never()).save(any(Comment.class));
+
+    }
+
 }
