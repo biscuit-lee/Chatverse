@@ -4,10 +4,11 @@ import java.time.LocalDateTime;
 
 public record CommentResponse(
     Long id,
-    String content,
+    String text,
     Long authorId,
-    String authorName,
+    String username,
     LocalDateTime createdAt,
-    int likeCount,
-    int dislikeCount
+    int likes,
+    int dislikes,
+    String profilePictureUrl
 ) {}

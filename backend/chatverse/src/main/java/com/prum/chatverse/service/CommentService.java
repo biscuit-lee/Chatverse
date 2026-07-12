@@ -49,7 +49,8 @@ public class CommentService {
             comment.getAuthor().getUsername(),
             comment.getCreatedAt(),
             comment.getLikes(),
-            comment.getDislikes()
+            comment.getDislikes(),
+            comment.getAuthor().getProfilePictureUrl()
         );
     }
 }

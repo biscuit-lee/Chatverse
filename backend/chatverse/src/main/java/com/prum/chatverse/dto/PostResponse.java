@@ -4,10 +4,12 @@ import java.time.LocalDateTime;
 
 public record PostResponse(
     Long id,
-    String content,
+    String text,
     LocalDateTime createdAt,
-    String authorName,
-    int likeCount,
-    int dislikeCount,
-    int commentCount)
+    String username,
+    Long authorId,
+    int likes,
+    int dislikes,
+    int commentCount,
+    String profilePictureUrl)
 {}

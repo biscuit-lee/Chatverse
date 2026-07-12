@@ -30,6 +30,11 @@ public class User {
 
     private String profilePictureUrl;
     
+    String bio;
+
+    int followers;
+
+    int following;
     @OneToMany(mappedBy = "author")
     private List<Post> posts;
 

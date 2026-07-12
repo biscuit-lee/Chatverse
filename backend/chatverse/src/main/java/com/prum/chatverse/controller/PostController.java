@@ -2,6 +2,7 @@ package com.prum.chatverse.controller;
 
 import java.security.Principal;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.prum.chatverse.dto.*;

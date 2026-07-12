@@ -35,9 +35,11 @@ public class PostService {
             savedPost.getContent(),
             savedPost.getCreatedAt(),
             savedPost.getAuthor().getUsername(),
+            savedPost.getAuthor().getId(),
             savedPost.getLikes(), 
             savedPost.getDislikes(), 
-            savedPost.getCommentsCount()
+            savedPost.getCommentsCount(),
+            savedPost.getAuthor().getProfilePictureUrl()
         );
 
 
