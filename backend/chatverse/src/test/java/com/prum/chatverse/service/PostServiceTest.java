@@ -67,7 +67,7 @@ public class PostServiceTest {
         // Asserts
 
         assertNotNull(result);
-        assertEquals(result.content(), postString);
+        assertEquals(result.text(), postString);
 
         verify(postRepository).save(any(Post.class));
 

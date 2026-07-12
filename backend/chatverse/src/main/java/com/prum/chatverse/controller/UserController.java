@@ -1,6 +1,8 @@
 package com.prum.chatverse.controller;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,12 @@ public class UserController {
     public UserController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
     }
+
+    @GetMapping("/{id}")
+    public UserInfoResponse getUserById(@PathVariable Long postId){
+        return userService.getUserInfo(postId);
+    }
+
     @PostMapping("/register")
     public RegisterResponse signUp(@RequestBody RegisterRequest registerRequest){
         return userService.signUp(registerRequest);

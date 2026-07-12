@@ -64,7 +64,7 @@ public class CommentServiceTest {
         when(commentRepository.save(any(Comment.class))).thenReturn(savedComment);
         CommentResponse result = commentService.createComment(fakeName, fakePostId, newRequest);
 
-        assertEquals(result.content(),commentContent);
+        assertEquals(result.text(),commentContent);
 
         verify(commentRepository).save(any(Comment.class));
     }

@@ -1,5 +1,7 @@
 package com.prum.chatverse.service;
 
+import java.util.List;
+
 import com.prum.chatverse.dto.CommentResponse;
 import com.prum.chatverse.dto.CreateCommentRequest;
 import com.prum.chatverse.entity.Comment;
@@ -38,6 +40,11 @@ public class CommentService {
         Comment saved = commentRepository.save(newComment);
 
         return mapToResponse(saved);
+    }
+
+    public List<CommentResponse> getCommentsByPostId(Long postId){
+        return commentRepository.findByPostId(postId)
+        .stream().map(this::mapToResponse).toList();
     }
 
     private CommentResponse mapToResponse(Comment comment){

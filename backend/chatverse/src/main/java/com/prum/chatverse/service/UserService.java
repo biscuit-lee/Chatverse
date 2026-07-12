@@ -7,6 +7,7 @@ import com.prum.chatverse.dto.LoginRequest;
 import com.prum.chatverse.dto.LoginResponse;
 import com.prum.chatverse.dto.RegisterRequest;
 import com.prum.chatverse.dto.RegisterResponse;
+import com.prum.chatverse.dto.UserInfoResponse;
 import com.prum.chatverse.entity.User;
 import com.prum.chatverse.repository.UserRepository;
 
@@ -58,5 +59,17 @@ public class UserService {
 
         return new LoginResponse(token,user.getUsername(),user.getId());
 
+    }
+    
+    public UserInfoResponse getUserInfo(Long userId){
+        User user = userRepository.findById(userId).orElseThrow();
+        return new UserInfoResponse(
+            user.getId(),
+            user.getUsername(),
+            user.getBio(),
+            user.getFollowers(),
+            user.getFollowing(),
+            user.getProfilePictureUrl()
+        );
     }
 }

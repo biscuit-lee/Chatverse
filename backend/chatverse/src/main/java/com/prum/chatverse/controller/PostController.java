@@ -1,11 +1,13 @@
 package com.prum.chatverse.controller;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.prum.chatverse.dto.*;
+import com.prum.chatverse.entity.Dislike;
 import com.prum.chatverse.entity.Post;
 import com.prum.chatverse.service.CommentService;
 import com.prum.chatverse.service.PostService;
@@ -23,7 +25,7 @@ public class PostController {
     
     @GetMapping
     public String getPosts(){
-        return "Get all posts";
+        return "hi";
     }
 
     @PostMapping
@@ -40,8 +42,10 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/dislike")
-    public void dislikePost(@PathVariable Long postId, Principal principal){
+    public DislikeResponse dislikePost(@PathVariable Long postId, Principal principal){
         String username = principal.getName();
+        Post resultPost = postService.dislikePost(postId, username);
+        return new DislikeResponse(true, resultPost.getDislikes());
     }
 
     @PostMapping("/{postId}/comment")
@@ -51,5 +55,10 @@ public class PostController {
     {
         return commentService.createComment(principal.getName(), postId, commentRequest);
         
+    }
+
+    @GetMapping("/{postId}/comments")
+    public List<CommentResponse> getCommentsByPostId(@PathVariable Long postId){
+        return commentService.getCommentsByPostId(postId);
     }
 }
