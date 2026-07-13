@@ -72,7 +72,7 @@ public class PostService {
     Post targetPost = postRepository.findById(id).orElseThrow();
 
     // Check if already liked the post 
-    if (likeRepository.existsByLikerAndPost(disliker, targetPost)){
+    if (dislikeRepository.existsByLikerAndPost(disliker, targetPost)){
         throw new IllegalStateException("You already liked the post");
     }
 

@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.prum.chatverse.dto.*;
 import com.prum.chatverse.service.*;
 
@@ -20,10 +23,15 @@ public class UserController {
     public UserController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
     }
-
+    
     @GetMapping("/{id}")
     public UserInfoResponse getUserById(@PathVariable Long postId){
         return userService.getUserInfo(postId);
+    }
+
+    @GetMapping("/{userId}/posts")
+    public Page<PostResponse> getPostsByUserId(@PathVariable Long userId, Pageable pageable){
+        return userService.getPostbyUserId(userId, pageable);
     }
 
     @PostMapping("/register")
