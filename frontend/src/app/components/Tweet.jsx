@@ -34,7 +34,9 @@ export default function Tweet({ tweet, setTweets, isComment }) {
       await api.dislikePost(tweet.id);
       setTweets((prev) =>
         prev.map((post) =>
-          post.id === tweet.id ? { ...post, dislikes: post.dislikes + 1 } : post
+          post.id === tweet.id
+            ? { ...post, dislikes: post.dislikes + 1 }
+            : post
         )
       );
     } catch (error) {
@@ -67,72 +69,86 @@ export default function Tweet({ tweet, setTweets, isComment }) {
   }
 
   return (
-    <div key={tweet.id} className="border-r-2 border-l-2 border-t-2">
-      <div className="flex space-x-4 mt-5 px-2">
+    <div
+      key={tweet.id}
+      className={`bg-surface px-4 py-3 ${
+        isComment ? "border-l-2 border-border ml-4" : "border-b border-border"
+      }`}
+    >
+      <div className="flex gap-3">
         <ProfilePic imgURL={tweet.profilePictureUrl} size="small" />
-        <h1 className="text-black">
-          <Link className="hover:underline" href={`/users/${tweet.authorId}`}>
-            <b>{tweet.username}</b>
-          </Link>
-        </h1>
-        <h3 className="text-gray-500">
-          {dayjs().from(dayjs(tweet.createdAt))}
-        </h3>
-      </div>
-      <div>
-        <h2 className="m-2 px-2">{tweet.text}</h2>
-      </div>
-      <div className="flex px-2">
-        <CiHeart
-          onClick={addLike}
-          className="w-6 h-6 mt-2 cursor-pointer text-red-500 hover:scale-110 transition-transform duration-200"
-        />
-        <p className="select-none w-6 h-6 ml-2 mt-2 mb-2">{tweet.likes}</p>
 
-        <BiSolidDislike
-          onClick={addDislike}
-          className="w-6 h-6 mt-2 cursor-pointer text-red-500 hover:scale-110 transition-transform duration-200"
-        />
-        <p className="select-none w-6 h-6 ml-2 mt-2 mb-2">{tweet.dislikes}</p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Link
+              className="font-bold text-text-primary text-[15px] hover:underline"
+              href={`/users/${tweet.authorId}`}
+            >
+              {tweet.username}
+            </Link>
+            <span className="text-text-secondary text-[13px]">
+              {dayjs().from(dayjs(tweet.createdAt))}
+            </span>
+          </div>
 
-        {!isComment && (
-          <>
-            <VscComment
-              className="w-6 h-6 mt-2 cursor-pointer hover:scale-110 transition-transform duration-200"
-            />
-            <p className="select-none w-6 h-6 ml-2 mt-2 mb-2">
-              {tweet.commentCount}
-            </p>
-            <IoMdArrowDropdown
-              onClick={getComments}
-              className="w-6 h-6 mt-2 cursor-pointer hover:scale-110 transition-transform duration-200"
-            />
-          </>
-        )}
-      </div>
+          <p className="text-text-primary text-[15px] leading-relaxed mt-1 whitespace-pre-wrap">
+            {tweet.text}
+          </p>
 
-      {!isComment && (
-        <div className="flex px-4 py-2">
-          <input
-            type="text"
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            placeholder="Write a comment..."
-            className="flex-1 border rounded-lg px-3 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-300"
-          />
-          <button
-            onClick={addComment}
-            className="ml-2 bg-blue-500 text-white text-sm px-3 py-1 rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            Reply
-          </button>
+          <div className="flex items-center gap-6 mt-2">
+            <button
+              onClick={addLike}
+              className="flex items-center gap-1.5 text-text-secondary hover:text-danger transition-colors duration-200 group cursor-pointer"
+            >
+              <BiSolidHeart className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+              <span className="text-[13px]">{tweet.likes}</span>
+            </button>
+
+            <button
+              onClick={addDislike}
+              className="flex items-center gap-1.5 text-text-secondary hover:text-danger transition-colors duration-200 group cursor-pointer"
+            >
+              <BiSolidDislike className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+              <span className="text-[13px]">{tweet.dislikes}</span>
+            </button>
+
+            {!isComment && (
+              <>
+                <button
+                  onClick={getComments}
+                  className="flex items-center gap-1.5 text-text-secondary hover:text-accent transition-colors duration-200 group cursor-pointer"
+                >
+                  <VscComment className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+                  <span className="text-[13px]">{tweet.commentCount}</span>
+                </button>
+              </>
+            )}
+          </div>
+
+          {!isComment && (
+            <div className="flex items-center gap-2 mt-3 pb-1">
+              <input
+                type="text"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addComment()}
+                placeholder="Write a comment..."
+                className="flex-1 bg-background border border-border rounded-full px-4 py-1.5 text-[13px] text-text-primary placeholder:text-text-secondary outline-none focus:border-accent transition-colors duration-200"
+              />
+              <button
+                onClick={addComment}
+                className="text-accent font-bold text-[13px] hover:text-accent-hover transition-colors duration-200 px-2 cursor-pointer"
+              >
+                Reply
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {comments.length > 0 &&
         comments.map((comment) => (
-          <div key={comment.id} className="ml-10">
-            <h1 className="m-2">Replies</h1>
+          <div key={comment.id} className="mt-2">
             <Tweet tweet={comment} setTweets={setComments} isComment={true} />
           </div>
         ))}

@@ -1,45 +1,44 @@
-'use client'
-import React from 'react';
-import Link from 'next/link';
+"use client";
+import React from "react";
+import Link from "next/link";
 import { FaRegBell } from "react-icons/fa6";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoHome } from "react-icons/io5";
 
 export default function Sidebar() {
-    return (<div className="fixed top-0 h-screen w-48 bg-gray-800 text-white shadow-lg flex flex-col items-start p-4 space-y-4">
-        <nav className="w-full">
-          <ul className="flex flex-col space-y-3">
-            <li>
-              <a
-                href="/"
-                className="flex gap-x-2 px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200"
-              >
-                <IoHome />
-                 Home
-              </a>
-            </li>
-            <li>
-                
-              <a
-                href="#"
-                className="px-4 gap-x-2 py-4 rounded-md hover:bg-gray-700 transition-colors duration-200 flex"
-              >
-                <FaRegBell/>
-                Explore
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex gap-x-2 px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200"
-              >
-                <FaMagnifyingGlass />
+  const navItems = [
+    { label: "Home", icon: <IoHome size={24} />, href: "/" },
+    { label: "Explore", icon: <FaMagnifyingGlass size={22} />, href: "#" },
+    { label: "Notifications", icon: <FaRegBell size={22} />, href: "#" },
+  ];
 
-                Notification
-              </a>
-            </li>
+  return (
+    <div className="fixed top-0 left-0 h-screen w-72 bg-surface border-r border-border flex flex-col justify-between py-4 px-4">
+      <div>
+        <Link href="/" className="flex items-center gap-2 px-4 py-3 mb-2">
+          <span className="text-2xl font-bold text-text-primary">Chatverse</span>
+        </Link>
+
+        <nav className="mt-2">
+          <ul className="flex flex-col gap-1">
+            {navItems.map((item) => (
+              <li key={item.label}>
+                <a
+                  href={item.href}
+                  className="flex items-center gap-4 px-4 py-3 rounded-full text-text-primary font-medium text-[15px] hover:bg-border transition-colors duration-200"
+                >
+                  {item.icon}
+                  {item.label}
+                </a>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>
-    );
-};
+
+      <button className="w-full bg-accent text-white font-bold py-3 rounded-full hover:bg-accent-hover transition-colors duration-200 text-[15px] cursor-pointer">
+        Post
+      </button>
+    </div>
+  );
+}

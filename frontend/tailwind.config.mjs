@@ -8,8 +8,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        background: "#f7f9fa",
+        surface: "#ffffff",
+        border: "#eff3f4",
+        "text-primary": "#0f1419",
+        "text-secondary": "#536471",
+        accent: "#1d9bf0",
+        "accent-hover": "#1a8cd8",
+        danger: "#f4212e",
+      },
+      fontFamily: {
+        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "monospace"],
       },
     },
   },

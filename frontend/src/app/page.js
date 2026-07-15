@@ -11,18 +11,16 @@ export default function Home() {
   if (loading) return null;
 
   if (!user) {
-    return (
-      <div>
-        <LoginPage />
-      </div>
-    );
+    return <LoginPage />;
   }
 
   return (
-    <div>
-      <RightSideBar />
+    <div className="flex justify-center min-h-screen bg-background">
       <Sidebar />
-      <HomePage />
+      <main className="flex-1 max-w-[600px] ml-72 mr-80 min-h-screen border-r border-border">
+        <HomePage />
+      </main>
+      <RightSideBar />
     </div>
   );
 }

@@ -34,48 +34,77 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex-1 ml-97 p-8 w-1/2 flex items-center justify-center min-h-screen">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-80">
-        <h1 className="text-2xl font-bold text-center">
-          {isRegister ? "Create Account" : "Login"}
-        </h1>
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-text-primary">Chatverse</h1>
+          <p className="text-text-secondary mt-2 text-[15px]">
+            {isRegister ? "Create your account" : "Welcome back"}
+          </p>
+        </div>
 
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          className="border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-300"
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          autoComplete="new-password"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          className="border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-300"
-        />
+        <form
+          onSubmit={handleSubmit}
+          className="bg-surface border border-border rounded-2xl p-8 shadow-sm"
+        >
+          <div className="flex flex-col gap-5">
+            <div>
+              <label className="block text-sm font-medium text-text-primary mb-1.5">
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                placeholder="Enter your username"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[15px] text-text-primary placeholder:text-text-secondary outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all duration-200"
+              />
+            </div>
 
-        {loginError && <p className="text-red-500 text-sm">{loginError}</p>}
+            <div>
+              <label className="block text-sm font-medium text-text-primary mb-1.5">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                autoComplete="new-password"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[15px] text-text-primary placeholder:text-text-secondary outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all duration-200"
+              />
+            </div>
 
-        <button className="bg-blue-500 text-white rounded-lg py-2 hover:bg-blue-600 transition-colors">
-          {isRegister ? "Register" : "Login"}
-        </button>
+            {loginError && (
+              <p className="text-danger text-sm font-medium">{loginError}</p>
+            )}
+
+            <button
+              type="submit"
+              className="w-full bg-accent text-white font-bold py-3 rounded-xl hover:bg-accent-hover transition-colors duration-200 text-[15px] mt-1 cursor-pointer"
+            >
+              {isRegister ? "Create account" : "Sign in"}
+            </button>
+          </div>
+        </form>
 
         <p
-          onClick={() => setIsRegister(!isRegister)}
-          className="text-sm text-center text-blue-500 cursor-pointer hover:underline"
+          onClick={() => {
+            setIsRegister(!isRegister);
+            setLoginError("");
+          }}
+          className="text-sm text-center text-accent cursor-pointer hover:underline mt-6"
         >
           {isRegister
-            ? "Already have an account? Login"
-            : "Don't have an account? Register"}
+            ? "Already have an account? Sign in"
+            : "Don't have an account? Sign up"}
         </p>
-      </form>
+      </div>
     </div>
   );
 }

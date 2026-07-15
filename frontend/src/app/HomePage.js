@@ -11,6 +11,7 @@ export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [posting, setPosting] = useState(false);
   const sentinelRef = useRef(null);
   const { logout } = useAuth();
 
@@ -56,41 +57,54 @@ export default function HomePage() {
     const content = formData.get("tweet");
     if (!content.trim()) return;
 
+    setPosting(true);
     try {
       await api.createPost(content);
       event.currentTarget.reset();
       fetchPosts(0);
     } catch (error) {
       console.log(error);
+    } finally {
+      setPosting(false);
     }
   }
 
   return (
-    <div className="flex-1 ml-97 p-8 w-1/2">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold">Feed</h1>
-        <button
-          onClick={logout}
-          className="text-sm text-gray-500 hover:text-red-500 transition-colors"
-        >
-          Logout
-        </button>
+    <div className="flex-1 min-w-0 border-r border-border">
+      <div className="sticky top-0 bg-surface/80 backdrop-blur-md border-b border-border px-4 py-3 z-10">
+        <div className="flex items-center justify-between">
+          <h1 className="font-bold text-xl text-text-primary">Home</h1>
+          <button
+            onClick={logout}
+            className="text-sm text-text-secondary hover:text-danger transition-colors duration-200 cursor-pointer"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
-      <form onSubmit={postTweet} className="flex">
-        <input
-          autoComplete="off"
-          placeholder="What's poppin"
-          name="tweet"
-          type="text"
-          className="w-3/4 max-w-xl h-16 bg-transparent border-none outline-none text-left text-lg"
-        />
-        <button className="bg-blue-500 text-white h-14 px-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
-          Post
+      <form
+        onSubmit={postTweet}
+        className="flex items-start gap-3 px-4 py-4 border-b border-border bg-surface"
+      >
+        <div className="flex-1">
+          <input
+            autoComplete="off"
+            placeholder="What's happening?"
+            name="tweet"
+            type="text"
+            className="w-full bg-transparent text-text-primary placeholder:text-text-secondary outline-none text-[15px] py-2"
+          />
+        </div>
+        <button
+          disabled={posting}
+          className="bg-accent text-white font-bold px-5 py-2 rounded-full hover:bg-accent-hover disabled:opacity-50 transition-colors duration-200 text-[15px] shrink-0 cursor-pointer"
+        >
+          {posting ? "..." : "Post"}
         </button>
       </form>
 
-      <div className="">
+      <div>
         {tweets.map((tweet) => (
           <Tweet
             key={tweet.id}
@@ -102,11 +116,22 @@ export default function HomePage() {
       </div>
 
       {currentPage + 1 < totalPages ? (
-        <div ref={sentinelRef} className="h-10 flex justify-center items-center my-6">
-          {loading && <p className="text-gray-500">Loading...</p>}
+        <div
+          ref={sentinelRef}
+          className="h-16 flex justify-center items-center"
+        >
+          {loading && (
+            <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+          )}
         </div>
       ) : tweets.length > 0 ? (
-        <p className="text-center text-gray-400 text-sm my-6">End of feed</p>
+        <p className="text-center text-text-secondary text-sm py-8">
+          You&apos;ve reached the end
+        </p>
+      ) : !loading ? (
+        <p className="text-center text-text-secondary text-sm py-12">
+          No posts yet. Be the first to post!
+        </p>
       ) : null}
     </div>
   );
