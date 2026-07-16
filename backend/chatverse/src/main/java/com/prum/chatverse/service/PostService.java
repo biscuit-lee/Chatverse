@@ -1,5 +1,7 @@
 package com.prum.chatverse.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -19,11 +21,10 @@ public class PostService {
         this.likeRepository = likeRepository;
         this.dislikeRepository = dislikeRepository;
     }
-
+    
     public PostResponse createPost(CreatePostRequest createPostRequest, String username){
         Post newPost = new Post();
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //String username = authentication.getName();
+
         User author = userRepository.findByUsername(username).orElseThrow();
         
         newPost.setContent(createPostRequest.content());
@@ -72,8 +73,8 @@ public class PostService {
     Post targetPost = postRepository.findById(id).orElseThrow();
 
     // Check if already liked the post 
-    if (dislikeRepository.existsByLikerAndPost(disliker, targetPost)){
-        throw new IllegalStateException("You already liked the post");
+    if (dislikeRepository.existsByDislikerAndPost(disliker, targetPost)){
+        throw new IllegalStateException("You already disliked the post");
     }
 
     
@@ -88,6 +89,5 @@ public class PostService {
 
     return targetPost;
 }
-
     
 }

@@ -8,6 +8,6 @@ import com.prum.chatverse.entity.User;
 import com.prum.chatverse.entity.Post;
 
 public interface DislikeRepository extends JpaRepository<Dislike,Long>{
-    boolean existsByLikerAndPost(User liker, Post post);
+    boolean existsByDislikerAndPost(User disliker, Post post);
     
 } 

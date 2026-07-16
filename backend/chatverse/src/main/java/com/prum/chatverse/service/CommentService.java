@@ -2,6 +2,8 @@ package com.prum.chatverse.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.prum.chatverse.dto.CommentResponse;
 import com.prum.chatverse.dto.CreateCommentRequest;
 import com.prum.chatverse.entity.Comment;
@@ -13,6 +15,7 @@ import com.prum.chatverse.repository.UserRepository;
 
 import jakarta.validation.Valid;
 
+@Service
 public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;

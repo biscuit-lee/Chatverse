@@ -19,9 +19,9 @@ public class Comment {
 
     private LocalDateTime createdAt;
 
-    private Integer likes;
+    private Integer likes = 0;
     
-    private Integer dislikes;
+    private Integer dislikes = 0;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

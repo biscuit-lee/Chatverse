@@ -18,9 +18,9 @@ public class JwtService {
 
     public String generateToken(String username){
         return Jwts.builder()
-        .setSubject(username)     // Who the token is about
-        .setIssuedAt(new Date())  // When it's created
-        .setExpiration(new Date(System.currentTimeMillis() + expirationMs)) // Expiration (Creation time + expiration duration)
+        .setSubject(username)   
+        .setIssuedAt(new Date()) 
+        .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
         .signWith(secretKey)
         .compact(); // Build final key
     }

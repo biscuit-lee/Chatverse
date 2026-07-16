@@ -44,14 +44,14 @@ public class AuthService {
         if (!userRepository.existsByUsername(loginRequest.username())){
             throw new RuntimeException("Invalid credentials");
         }
-
+        
         User user = userRepository.findByUsername(loginRequest.username())
         .orElseThrow(() -> new RuntimeException("Invalid Credentials"));
         
         boolean passwordMatch = passwordEncoder.matches(loginRequest.password(), user.getPassword());
         
         if (!passwordMatch){
-            throw new RuntimeException("Wrong password");
+            throw new RuntimeException("Invalid credentials");
         }
         
         String token = jwtService.generateToken(loginRequest.username());

@@ -3,6 +3,8 @@ package com.prum.chatverse.controller;
 import java.security.Principal;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,21 +13,23 @@ import com.prum.chatverse.entity.Dislike;
 import com.prum.chatverse.entity.Post;
 import com.prum.chatverse.service.CommentService;
 import com.prum.chatverse.service.PostService;
+import com.prum.chatverse.service.TimelineService;
 
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
     private final PostService postService;
     private final CommentService commentService;
-
-    public PostController(PostService postService, CommentService commentService){
+    private final TimelineService timelineService;
+    public PostController(PostService postService, CommentService commentService, TimelineService timelineService){
         this.postService = postService;
         this.commentService = commentService;
+        this.timelineService = timelineService;
     }
     
     @GetMapping
-    public String getPosts(){
-        return "hi";
+    public Page<PostResponse> getPosts(@RequestParam String sortType, Pageable pageable){
+        return timelineService.getFeed(sortType, pageable);
     }
 
     @PostMapping

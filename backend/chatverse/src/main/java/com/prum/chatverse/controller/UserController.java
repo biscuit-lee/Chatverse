@@ -24,7 +24,7 @@ public class UserController {
         this.userService = userService;
     }
     
-    @GetMapping("/{id}")
+    @GetMapping("/{postId}")
     public UserInfoResponse getUserById(@PathVariable Long postId){
         return userService.getUserInfo(postId);
     }

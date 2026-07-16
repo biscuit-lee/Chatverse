@@ -32,9 +32,9 @@ public class User {
     
     String bio;
 
-    int followers;
+    int followers = 0;
 
-    int following;
+    int following = 0;
     @OneToMany(mappedBy = "author")
     private List<Post> posts;
 

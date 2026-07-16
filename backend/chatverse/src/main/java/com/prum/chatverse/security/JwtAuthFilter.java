@@ -33,6 +33,7 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
+            
             return;
         }
         
@@ -49,6 +50,10 @@ public class JwtAuthFilter extends OncePerRequestFilter{
         filterChain.doFilter(request, response);
 
 
+    }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 
 }
