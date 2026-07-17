@@ -24,6 +24,7 @@ import com.prum.chatverse.security.ApiKeyFilter;
 import com.prum.chatverse.service.CommentService;
 import com.prum.chatverse.service.JwtService;
 import com.prum.chatverse.service.PostService;
+import com.prum.chatverse.service.TimelineService;
 import com.prum.chatverse.service.UserService;
 
 @WebMvcTest(PostController.class)
@@ -55,6 +56,9 @@ public class PostControllerTest {
     JwtService jwtService;
 
     @MockitoBean
+    TimelineService timelineService;
+
+    @MockitoBean
     ApiKeyFilter apiKeyFilter;
     @Test
     void shouldCreatePost() throws Exception {
@@ -74,10 +78,10 @@ public class PostControllerTest {
             post("/api/posts")
                 .principal(() -> "bob")
                 .content("""
-                        {"content": "Hello testers"}
+                        {"text": "Hello testers"}
                         """)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
-         .andExpect(jsonPath("$.content").value("Hello testers"));
+         .andExpect(jsonPath("$.text").value("Hello testers"));
     }
 }
