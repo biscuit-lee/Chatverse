@@ -2,35 +2,35 @@ package com.prum.chatverse.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.prum.chatverse.dto.LoginRequest;
-import com.prum.chatverse.dto.LoginResponse;
-import com.prum.chatverse.dto.RegisterRequest;
-import com.prum.chatverse.dto.RegisterResponse;
-import com.prum.chatverse.dto.UserInfoResponse;
 import com.prum.chatverse.dto.PostResponse;
+import com.prum.chatverse.dto.UserInfoResponse;
 import com.prum.chatverse.entity.Post;
 import com.prum.chatverse.entity.User;
 import com.prum.chatverse.repository.PostRepository;
 import com.prum.chatverse.repository.UserRepository;
 
 @Service
-public class UserService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+public class SearchService {
     private final PostRepository postRepository;
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, PostRepository postRepository){
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
+    private final UserRepository userRepository;
+    public SearchService(PostRepository postRepository, UserRepository userRepository){
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
-    
-    public UserInfoResponse getUserInfo(Long userId){
-        User user = userRepository.findById(userId).orElseThrow();
+
+    public Page<PostResponse> searchPost(String query, Pageable pageable){
+        return postRepository.search(query, pageable).map(this::mapPostResponse);
+    }
+
+
+    public Page<UserInfoResponse> searchUser(String query, Pageable pageable){
+        return userRepository.findByUsernameContainingIgnoreCase(query, pageable).map(this::mapUserInfoResponse);
+    }
+
+
+    private UserInfoResponse mapUserInfoResponse(User user){
         return new UserInfoResponse(
             user.getId(),
             user.getUsername(),
@@ -39,10 +39,6 @@ public class UserService {
             user.getFollowing(),
             user.getProfilePictureUrl()
         );
-    }
-
-    public Page<PostResponse> getPostbyUserId(Long userId, Pageable pageable){
-        return postRepository.findByAuthorId(userId, pageable).map(this::mapPostResponse);
     }
 
     private PostResponse mapPostResponse(Post post){

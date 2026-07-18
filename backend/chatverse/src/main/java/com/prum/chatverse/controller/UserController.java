@@ -19,9 +19,11 @@ import com.prum.chatverse.service.*;
 public class UserController {
     
     private final UserService userService;
+    private final AuthService authService;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService, AuthService authService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.authService = authService;
     }
     
     @GetMapping("/{postId}")
@@ -36,11 +38,11 @@ public class UserController {
 
     @PostMapping("/register")
     public RegisterResponse signUp(@RequestBody RegisterRequest registerRequest){
-        return userService.signUp(registerRequest);
+        return authService.signUp(registerRequest);
     }
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest){
-        return userService.login(loginRequest);
+        return authService.login(loginRequest);
     }
 }
