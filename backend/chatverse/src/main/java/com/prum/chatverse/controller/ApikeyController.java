@@ -4,9 +4,11 @@ import java.security.Principal;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.prum.chatverse.dto.ApiKeyResponse;
 import com.prum.chatverse.entity.User;
 import com.prum.chatverse.service.ApiKeyService;
 import com.prum.chatverse.service.UserService;
@@ -22,9 +24,9 @@ public class ApikeyController {
     }
 
     @PostMapping("/generate")
-    public String generateApiKey(Principal principal) {
+    public ApiKeyResponse generateApiKey(@RequestBody String keyName, Principal principal) {
         User user = userService.getUserByUsername(principal.getName());
-        return apiKeyService.generateApiKey(user);
+        return apiKeyService.generateApiKey(user, keyName);
     }
 
     

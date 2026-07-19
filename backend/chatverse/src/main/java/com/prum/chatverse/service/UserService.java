@@ -13,6 +13,7 @@ import com.prum.chatverse.dto.UserInfoResponse;
 import com.prum.chatverse.dto.PostResponse;
 import com.prum.chatverse.entity.Post;
 import com.prum.chatverse.entity.User;
+import com.prum.chatverse.mapper.PostMapper;
 import com.prum.chatverse.repository.PostRepository;
 import com.prum.chatverse.repository.UserRepository;
 
@@ -41,21 +42,12 @@ public class UserService {
         );
     }
 
-    public Page<PostResponse> getPostbyUserId(Long userId, Pageable pageable){
-        return postRepository.findByAuthorId(userId, pageable).map(this::mapPostResponse);
+    public User getUserByUsername(String username){
+        return userRepository.findByUsername(username).orElseThrow();
     }
 
-    private PostResponse mapPostResponse(Post post){
-        return new PostResponse(
-            post.getId(),
-            post.getContent(),
-            post.getCreatedAt(),
-            post.getAuthor().getUsername(),
-            post.getAuthor().getId(),
-            post.getLikes(),
-            post.getDislikes(),
-            post.getCommentsCount(),
-            post.getAuthor().getProfilePictureUrl()
-        );
+    public Page<PostResponse> getPostbyUserId(Long userId, Pageable pageable){
+        return postRepository.findByAuthorId(userId, pageable).map(PostMapper::mapPostResponse);
     }
+
 }

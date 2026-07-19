@@ -9,8 +9,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.prum.chatverse.dto.ApiKeyResponse;
 import com.prum.chatverse.entity.ApiKey;
 import com.prum.chatverse.entity.User;
+import com.prum.chatverse.mapper.ApiKeyMapper;
 import com.prum.chatverse.repository.ApiKeyRepository;
 
 @Service
@@ -21,7 +23,7 @@ public class ApiKeyService {
         this.apiKeyRepository = apiKeyRepository;
     }
 
-    public String generateApiKey(User apiKeyOwner){
+    public String generateRawApiKey(User apiKeyOwner, String keyName){
         // Create cryptographically secure random bytes
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[32];
@@ -36,10 +38,13 @@ public class ApiKeyService {
         apiKey.setHashedApiKey(hashedKey);
         apiKey.setKeyOwner(apiKeyOwner);
         apiKey.setActive(true);
+        apiKey.setKeyName(keyName);
 
         apiKeyRepository.save(apiKey);
         return rawKey;
     }
+
+
 
     public Optional<User> validateApiKey(String rawApiKey){
         String hashedKey = hashKey(rawApiKey);
@@ -66,5 +71,11 @@ public class ApiKeyService {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("SHA-256 algorithm not found!", e);
         }
+    }
+
+    public ApiKeyResponse generateApiKey(User user, String keyName) {
+        String rawApiKey = generateRawApiKey(user, keyName);
+        ApiKey apiKey = apiKeyRepository.findByHashedApiKeyAndIsActiveTrue(hashKey(rawApiKey)).orElseThrow();
+        return ApiKeyMapper.mapApiKeyResponse(apiKey, rawApiKey);
     }
 }

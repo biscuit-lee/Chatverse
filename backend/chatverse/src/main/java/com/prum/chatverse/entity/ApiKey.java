@@ -23,6 +23,8 @@ public class ApiKey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String keyName;
+    
     private String hashedApiKey;
 
     @ManyToOne(fetch = FetchType.LAZY)
