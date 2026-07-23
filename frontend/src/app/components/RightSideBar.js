@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 
 const trending = [
@@ -13,7 +13,15 @@ const whoToFollow = [
   { name: "Another User", handle: "@another" },
 ];
 
-export default function RightSidebar() {
+export default function RightSidebar({ onSearch }) {
+  const [searchValue, setSearchValue] = useState("");
+
+  function handleKeyDown(e) {
+    if (e.key === "Enter" && searchValue.trim()) {
+      onSearch(searchValue.trim());
+    }
+  }
+
   return (
     <div className="fixed top-0 right-0 h-screen w-80 bg-surface border-l border-border flex flex-col gap-4 overflow-y-auto py-4 px-6">
       <div className="relative">
@@ -23,6 +31,9 @@ export default function RightSidebar() {
         />
         <input
           type="text"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Search"
           className="w-full bg-background border border-border rounded-full py-3 pl-12 pr-4 text-[15px] text-text-primary placeholder:text-text-secondary outline-none focus:border-accent focus:bg-surface transition-colors duration-200"
         />

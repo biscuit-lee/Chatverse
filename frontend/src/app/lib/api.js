@@ -8,6 +8,13 @@ async function request(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
 
   if (!res.ok) {
+    if (res.status === 401 && !path.includes("/login") && !path.includes("/register")) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      localStorage.removeItem("userId");
+      window.location.reload();
+      return;
+    }
     const body = await res.json().catch(() => ({}));
     throw { status: res.status, ...body };
   }
@@ -28,8 +35,8 @@ export const api = {
       body: JSON.stringify({ username, password }),
     }),
 
-  getPosts: (page = 0, size = 10) =>
-    request(`/api/posts?page=${page}&size=${size}`),
+  getPosts: (page = 0, size = 10, sortType = "new") =>
+    request(`/api/posts?page=${page}&size=${size}&sortType=${sortType}`),
 
   createPost: (content) =>
     request("/api/posts", {
@@ -55,4 +62,7 @@ export const api = {
 
   getUserPosts: (id, page = 0, size = 10) =>
     request(`/api/users/${id}/posts?page=${page}&size=${size}`),
+
+  searchPosts: (q, page = 0, size = 10) =>
+    request(`/api/search/posts?q=${encodeURIComponent(q)}&page=${page}&size=${size}`),
 };

@@ -5,10 +5,10 @@ import { FaRegBell } from "react-icons/fa6";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoHome } from "react-icons/io5";
 
-export default function Sidebar() {
+export default function Sidebar({ onExplore }) {
   const navItems = [
     { label: "Home", icon: <IoHome size={24} />, href: "/" },
-    { label: "Explore", icon: <FaMagnifyingGlass size={22} />, href: "#" },
+    { label: "Explore", icon: <FaMagnifyingGlass size={22} />, href: "#", onClick: () => onExplore() },
     { label: "Notifications", icon: <FaRegBell size={22} />, href: "#" },
   ];
 
@@ -25,7 +25,8 @@ export default function Sidebar() {
               <li key={item.label}>
                 <a
                   href={item.href}
-                  className="flex items-center gap-4 px-4 py-3 rounded-full text-text-primary font-medium text-[15px] hover:bg-border transition-colors duration-200"
+                  onClick={item.onClick}
+                  className="flex items-center gap-4 px-4 py-3 rounded-full text-text-primary font-medium text-[15px] hover:bg-border transition-colors duration-200 cursor-pointer"
                 >
                   {item.icon}
                   {item.label}

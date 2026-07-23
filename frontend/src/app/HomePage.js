@@ -12,13 +12,16 @@ export default function HomePage() {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [posting, setPosting] = useState(false);
+  const [postError, setPostError] = useState("");
+  const [sortType, setSortType] = useState("new");
+  const formRef = useRef(null);
   const sentinelRef = useRef(null);
   const { logout } = useAuth();
 
   const fetchPosts = useCallback(async (page = 0) => {
     setLoading(true);
     try {
-      const data = await api.getPosts(page, PAGE_SIZE);
+      const data = await api.getPosts(page, PAGE_SIZE, sortType);
       if (page === 0) {
         setTweets(data.content);
       } else {
@@ -31,7 +34,7 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [sortType]);
 
   useEffect(() => {
     fetchPosts(0);
@@ -53,17 +56,18 @@ export default function HomePage() {
 
   async function postTweet(event) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(formRef.current);
     const content = formData.get("tweet");
     if (!content.trim()) return;
 
     setPosting(true);
+    setPostError("");
     try {
-      await api.createPost(content);
-      event.currentTarget.reset();
-      fetchPosts(0);
+      const newPost = await api.createPost(content);
+      setTweets((prev) => [newPost, ...prev]);
+      formRef.current.reset();
     } catch (error) {
-      console.log(error);
+      setPostError("Failed to post. Please try again.");
     } finally {
       setPosting(false);
     }
@@ -81,9 +85,32 @@ export default function HomePage() {
             Logout
           </button>
         </div>
+        <div className="flex mt-3">
+          <button
+            onClick={() => setSortType("new")}
+            className={`flex-1 text-center py-3 text-[15px] font-medium transition-colors duration-200 cursor-pointer ${
+              sortType === "new"
+                ? "text-text-primary border-b-2 border-accent"
+                : "text-text-secondary hover:text-text-primary hover:bg-white/5"
+            }`}
+          >
+            For you
+          </button>
+          <button
+            onClick={() => setSortType("hot")}
+            className={`flex-1 text-center py-3 text-[15px] font-medium transition-colors duration-200 cursor-pointer ${
+              sortType === "hot"
+                ? "text-text-primary border-b-2 border-accent"
+                : "text-text-secondary hover:text-text-primary hover:bg-white/5"
+            }`}
+          >
+            Top
+          </button>
+        </div>
       </div>
 
       <form
+        ref={formRef}
         onSubmit={postTweet}
         className="flex items-start gap-3 px-4 py-4 border-b border-border bg-surface"
       >
@@ -95,6 +122,9 @@ export default function HomePage() {
             type="text"
             className="w-full bg-transparent text-text-primary placeholder:text-text-secondary outline-none text-[15px] py-2"
           />
+          {postError && (
+            <p className="text-danger text-sm mt-1">{postError}</p>
+          )}
         </div>
         <button
           disabled={posting}

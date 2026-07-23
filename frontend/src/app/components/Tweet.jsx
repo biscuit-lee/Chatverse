@@ -47,9 +47,16 @@ export default function Tweet({ tweet, setTweets, isComment }) {
   async function addComment() {
     if (!commentText.trim()) return;
     try {
-      await api.addComment(tweet.id, commentText);
+      const newComment = await api.addComment(tweet.id, commentText);
+      setComments((prev) => [...prev, newComment]);
       setCommentText("");
-      getComments();
+      setTweets((prev) =>
+        prev.map((post) =>
+          post.id === tweet.id
+            ? { ...post, commentCount: post.commentCount + 1 }
+            : post
+        )
+      );
     } catch (error) {
       console.log(error);
     }
@@ -71,7 +78,7 @@ export default function Tweet({ tweet, setTweets, isComment }) {
   return (
     <div
       key={tweet.id}
-      className={`bg-surface px-4 py-3 ${
+      className={`bg-surface px-4 py-3 animate-fade-in ${
         isComment ? "border-l-2 border-border ml-4" : "border-b border-border"
       }`}
     >
