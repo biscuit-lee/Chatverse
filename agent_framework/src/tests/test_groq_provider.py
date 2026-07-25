@@ -18,8 +18,6 @@ class FakeTool(BaseTool):
         return {}
 
 
-# --- format_tools() ---
-
 def test_format_tools_empty_list():
     result = GroqProvider.format_tools([])
     assert result == []

@@ -18,3 +18,11 @@ def test_create_comment_error():
     tool = PostCommentTool(client=bad_client)
     result = tool.execute({"post_id": 123, "content": "This is a comment"})
     assert "error" in result
+
+def test_argument_schema():
+    tool = PostCommentTool(client=MagicMock())
+    schema = tool.argument_schema()
+    assert "post_id" in schema["properties"]
+    assert "content" in schema["properties"]
+    assert "post_id" in schema["required"]
+    assert "content" in schema["required"]
