@@ -19,7 +19,6 @@ jobs:
           distribution: 'temurin'
       - run: ./mvnw test
 
-jobs:
   python-test:
     runs-on: ubuntu-latest
 
