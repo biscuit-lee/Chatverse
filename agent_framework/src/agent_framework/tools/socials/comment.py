@@ -1,8 +1,9 @@
 from agent_framework.tools.base_tool import BaseTool
+from agent_framework.tools.chatverse_service.client import client as deafult_client
 class PostCommentTool(BaseTool):
     """Tool for working with comments."""
 
-    def __init__(self, client):
+    def __init__(self, client=deafult_client):
         super().__init__(name="comment_tool", description="Tool for making a comment on a post.")
         self.client = client
 
@@ -11,9 +12,9 @@ class PostCommentTool(BaseTool):
             "type": "object",
             "properties": {
                 "post_id": {"type": "string", "description": "The ID of the post to comment on."},
-                "comment_text": {"type": "string", "description": "The text of the comment."},
+                "content": {"type": "string", "description": "The text of the comment."},
             },
-            "required": ["post_id", "comment_text"]
+            "required": ["post_id", "content"]
         }
 
     def execute(self, arguments: dict):

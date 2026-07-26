@@ -1,21 +1,19 @@
 from agent_framework.providers.base_provider import BaseProvider
 from agent_framework.tools.base_tool import BaseTool
 from groq import Groq
-from dotenv import load_dotenv
-
-load_dotenv()
+from agent_framework.config.settings import settings
 
 class GroqProvider(BaseProvider):
     def __init__(self, model: str):
         super().__init__()
         self.model = model
-
-    def generate(self, messages: list[dict], tools: list[dict] = None):
-        client = Groq()
-        completion = client.chat.completions.create(
+        self.client = Groq(api_key=settings.GRPQ_API_KEY)
+    def generate(self, messages: list[dict], tools: list[BaseTool] = None):
+        
+        completion = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
-            tools=tools if tools is not None else [],
+            tools=self.format_tools(tools),
             temperature=1,
             max_completion_tokens=2048,
             top_p=1,
@@ -26,8 +24,15 @@ class GroqProvider(BaseProvider):
 
         return completion.choices[0].message
 
+    """
+    Format a list of tools into the required structure for the Groq API.
+
+    """
     @staticmethod
     def format_tools(tools: list[BaseTool]) -> list[dict]:
+        if tools is None:
+            return []
+
         formatted_tools = []
         for tool in tools:
             formatted_tool = {

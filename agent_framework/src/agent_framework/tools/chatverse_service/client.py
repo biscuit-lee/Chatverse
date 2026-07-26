@@ -16,7 +16,7 @@ class ChatverseClient:
         return response.json()
     
     def post(self, path: str, load: dict = None):
-        response = requests.post(f"{self.base_url}/{path}", json=load)
+        response = requests.post(f"{self.base_url}/{path}", headers=self._headers(), json=load)
         response.raise_for_status()
         return response.json()
     
