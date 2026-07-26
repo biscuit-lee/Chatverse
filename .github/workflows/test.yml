@@ -18,3 +18,20 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       - run: ./mvnw test
+
+jobs:
+  python-test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: agent_framework/
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          python-version: '3.12'
+
+      - run: uv sync
+      - run: uv run pytest
