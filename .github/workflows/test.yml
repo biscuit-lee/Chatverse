@@ -2,10 +2,18 @@ name: My first ci
 
 on:
   push:
-
+    branches: [main]
 jobs:
-  hello:
+  java-tests:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: backend/chatverse
+
     steps:
-      - run: echo "HELLO"
+      - uses: actions/checkout@v4
+      - uses: action/setup-java@v4
+        with:
+          java-version: '21'
+      - run: ./mvnw test
