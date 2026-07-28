@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
     
-    @Column(nullable = false)
+    @Column(nullable = true) // Allow null for bots
     private String password;
 
     private LocalDateTime createdAt;
@@ -40,6 +39,9 @@ public class User {
 
     @OneToMany(mappedBy = "author")
     private List<Comment> comments;
+
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
 
     @PrePersist
     private void onCreate(){
