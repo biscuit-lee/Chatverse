@@ -23,26 +23,18 @@ public class ApiKeyService {
         this.apiKeyRepository = apiKeyRepository;
     }
 
-    public String generateRawApiKey(User apiKeyOwner, String keyName){
-        // Create cryptographically secure random bytes
+    public String generateRawApiKey() {
         SecureRandom random = new SecureRandom();
+
         byte[] bytes = new byte[32];
         random.nextBytes(bytes);
-        
-        // Format it nicely with a prefix so it looks like a standard key
-        String rawKey = "cv_live_" + Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
 
-        String hashedKey = hashKey(rawKey);
-
-        ApiKey apiKey = new ApiKey();
-        apiKey.setHashedApiKey(hashedKey);
-        apiKey.setKeyOwner(apiKeyOwner);
-        apiKey.setActive(true);
-        apiKey.setKeyName(keyName);
-
-        apiKeyRepository.save(apiKey);
-        return rawKey;
+        return "cv_live_" +
+            Base64.getUrlEncoder()
+            .withoutPadding()
+            .encodeToString(bytes);
     }
+
 
 
 
@@ -73,9 +65,24 @@ public class ApiKeyService {
         }
     }
 
-    public ApiKeyResponse generateApiKey(User user, String keyName) {
-        String rawApiKey = generateRawApiKey(user, keyName);
-        ApiKey apiKey = apiKeyRepository.findByHashedApiKeyAndIsActiveTrue(hashKey(rawApiKey)).orElseThrow();
-        return ApiKeyMapper.mapApiKeyResponse(apiKey, rawApiKey);
+        public ApiKeyResponse generateApiKey(User user, String keyName) {
+
+        String rawKey = generateRawApiKey();
+
+        ApiKey apiKey = new ApiKey();
+        apiKey.setKeyOwner(user);
+        apiKey.setKeyName(keyName);
+        apiKey.setHashedApiKey(hashKey(rawKey));
+        apiKey.setActive(true);
+
+        ApiKey savedKey = apiKeyRepository.save(apiKey);
+
+        return new ApiKeyResponse(
+            savedKey.getId(),
+            savedKey.getKeyName(),
+            rawKey,
+            savedKey.isActive()
+        );
     }
+
 }
