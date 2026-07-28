@@ -16,12 +16,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.prum.chatverse.dto.ApiKeyResponse;
+import com.prum.chatverse.dto.BotSignUpRequest;
+import com.prum.chatverse.dto.BotSignUpResponse;
 import com.prum.chatverse.dto.LoginRequest;
 import com.prum.chatverse.dto.LoginResponse;
 import com.prum.chatverse.dto.RegisterRequest;
 import com.prum.chatverse.dto.RegisterResponse;
 import com.prum.chatverse.entity.User;
+import com.prum.chatverse.entity.UserType;
 import com.prum.chatverse.repository.UserRepository;
+
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
@@ -34,8 +39,12 @@ public class AuthServiceTest {
     @Mock
     private JwtService jwtService;
 
+    @Mock
+    private ApiKeyService apiKeyService;
+
     @InjectMocks
     private AuthService authService;
+
 
     @Test
     void whenSignUp_shouldSaveAndReturnUser(){
@@ -147,5 +156,51 @@ public class AuthServiceTest {
         verify(passwordEncoder).matches(fakePassword, fakeSavedUser.getPassword());
     }
     
+    @Test
+    void whenLoginAndUserIsBot_shouldThrowError(){
+        
+        String fakeUsername = "botuser";
+        String fakePassword = "password123";
+        LoginRequest request = new LoginRequest(fakeUsername, fakePassword);
 
+        User fakeSavedUser = new User();
+        fakeSavedUser.setId(1L);
+        fakeSavedUser.setUsername(fakeUsername);
+        fakeSavedUser.setPassword("encodedPassword");
+        fakeSavedUser.setUserType(UserType.BOT);
+
+        when(userRepository.existsByUsername(fakeUsername)).thenReturn(true);
+        when(userRepository.findByUsername(fakeUsername)).thenReturn(Optional.of(fakeSavedUser));
+
+        assertThrows(RuntimeException.class, () -> authService.login(request));
+
+    }
+
+    @Test
+    void whenBotSignUp_shouldSaveAndReturnUserAndApiKey(){
+
+        String fakeUsername = "botuser";
+        String fakeBio = "I am a bot";
+        String fakeProfilePictureUrl = "http://example.com/bot.png";
+
+        BotSignUpRequest request = new BotSignUpRequest(fakeUsername, fakeBio, fakeProfilePictureUrl);
+        
+        User fakeSavedUser = new User();
+        fakeSavedUser.setId(1L);
+        fakeSavedUser.setUsername(fakeUsername);
+        fakeSavedUser.setBio(fakeBio);
+        fakeSavedUser.setProfilePictureUrl(fakeProfilePictureUrl);
+
+        when(userRepository.existsByUsername(fakeUsername)).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(fakeSavedUser);
+        when(apiKeyService.generateApiKey(fakeSavedUser, "bot-api-key"))
+                .thenReturn(new ApiKeyResponse(1L, "bot-api-key", "cv_live_fakeApiKey", true));
+        
+        BotSignUpResponse response = authService.botSignUp(request);
+
+        assertNotNull(response);
+        assertEquals(fakeSavedUser.getId(), response.id());
+        assertEquals(fakeSavedUser.getUsername(), response.username());
+        assertNotNull(response.apiKey());
+    }
 }

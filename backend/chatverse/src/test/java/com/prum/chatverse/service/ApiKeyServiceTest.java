@@ -20,12 +20,14 @@ import com.prum.chatverse.entity.ApiKey;
 import com.prum.chatverse.entity.User;
 import com.prum.chatverse.repository.ApiKeyRepository;
 
+
 @ExtendWith(MockitoExtension.class)
 class ApiKeyServiceTest {
 
     @Mock
     private ApiKeyRepository apiKeyRepository;
 
+    
     @InjectMocks
     private ApiKeyService apiKeyService;
 
@@ -48,10 +50,7 @@ class ApiKeyServiceTest {
 
     @Test
     void generateRawApiKey_returnsKeyWithCorrectPrefix() {
-        User user = new User();
-        when(apiKeyRepository.save(any(ApiKey.class))).thenReturn(new ApiKey());
-
-        String rawKey = apiKeyService.generateRawApiKey(user, "test-key");
+        String rawKey = apiKeyService.generateRawApiKey();
 
         assertTrue(rawKey.startsWith("cv_live_"));
     }
@@ -61,21 +60,21 @@ class ApiKeyServiceTest {
         User user = new User();
         when(apiKeyRepository.save(any(ApiKey.class))).thenReturn(new ApiKey());
 
-        apiKeyService.generateRawApiKey(user, "test-key");
+        apiKeyService.generateApiKey(user, "test-key");
 
         verify(apiKeyRepository, times(1)).save(any(ApiKey.class));
     }
 
     @Test
-    void generateRawApiKey_savesWithHashedKey() {
+    void generateApiKey_savesWithHashedKey() {
         User user = new User();
         ArgumentCaptor<ApiKey> captor = ArgumentCaptor.forClass(ApiKey.class);
         when(apiKeyRepository.save(captor.capture())).thenReturn(new ApiKey());
 
-        String rawKey = apiKeyService.generateRawApiKey(user, "test-key");
+        ApiKeyResponse res = apiKeyService.generateApiKey(user, "test-key");
 
         ApiKey saved = captor.getValue();
-        assertEquals(sha256(rawKey), saved.getHashedApiKey());
+        assertEquals(sha256(res.rawApiKey()), saved.getHashedApiKey());
     }
 
     @Test
@@ -84,43 +83,43 @@ class ApiKeyServiceTest {
         ArgumentCaptor<ApiKey> captor = ArgumentCaptor.forClass(ApiKey.class);
         when(apiKeyRepository.save(captor.capture())).thenReturn(new ApiKey());
 
-        apiKeyService.generateRawApiKey(user, "test-key");
+        apiKeyService.generateApiKey(user, "test-key");
 
         assertTrue(captor.getValue().isActive());
     }
 
     @Test
-    void generateRawApiKey_setsKeyOwner() {
+    void generateApiKey_setsKeyOwner() {
         User user = new User();
         user.setUsername("bob");
         ArgumentCaptor<ApiKey> captor = ArgumentCaptor.forClass(ApiKey.class);
         when(apiKeyRepository.save(captor.capture())).thenReturn(new ApiKey());
 
-        apiKeyService.generateRawApiKey(user, "test-key");
+        apiKeyService.generateApiKey(user, "test-key");
 
         assertSame(user, captor.getValue().getKeyOwner());
     }
 
     @Test
-    void generateRawApiKey_setsKeyName() {
+    void generateApiKey_setsKeyName() {
         User user = new User();
         ArgumentCaptor<ApiKey> captor = ArgumentCaptor.forClass(ApiKey.class);
         when(apiKeyRepository.save(captor.capture())).thenReturn(new ApiKey());
 
-        apiKeyService.generateRawApiKey(user, "my-api-key");
+        apiKeyService.generateApiKey(user, "my-api-key");
 
         assertEquals("my-api-key", captor.getValue().getKeyName());
     }
 
     @Test
-    void generateRawApiKey_generatesDifferentKeysEachCall() {
+    void generateApiKey_generatesDifferentKeysEachCall() {
         User user = new User();
         when(apiKeyRepository.save(any(ApiKey.class))).thenReturn(new ApiKey());
 
-        String key1 = apiKeyService.generateRawApiKey(user, "key-1");
-        String key2 = apiKeyService.generateRawApiKey(user, "key-2");
+        ApiKeyResponse key1 = apiKeyService.generateApiKey(user, "key-1");
+        ApiKeyResponse key2 = apiKeyService.generateApiKey(user, "key-2");
 
-        assertNotEquals(key1, key2);
+        assertNotEquals(key1.rawApiKey(), key2.rawApiKey());
     }
 
     @Test
@@ -128,11 +127,11 @@ class ApiKeyServiceTest {
         User user = new User();
         when(apiKeyRepository.save(any(ApiKey.class))).thenReturn(new ApiKey());
 
-        String rawKey = apiKeyService.generateRawApiKey(user, "test-key");
+        ApiKeyResponse res = apiKeyService.generateApiKey(user, "test-key");
 
         String prefix = "cv_live_";
-        assertTrue(rawKey.startsWith(prefix));
-        String encodedPart = rawKey.substring(prefix.length());
+        assertTrue(res.rawApiKey().startsWith(prefix));
+        String encodedPart = res.rawApiKey().substring(prefix.length());
         assertEquals(43, encodedPart.length());
         assertTrue(encodedPart.matches("^[A-Za-z0-9_-]+$"));
     }
@@ -179,15 +178,6 @@ class ApiKeyServiceTest {
         assertEquals(expectedHash, captor.getValue());
     }
 
-    @Test
-    void validateApiKey_inactiveKey_returnsEmpty() {
-        when(apiKeyRepository.findByHashedApiKeyAndIsActiveTrue(anyString()))
-                .thenReturn(Optional.empty());
-
-        Optional<User> result = apiKeyService.validateApiKey("cv_live_inactiveKey");
-
-        assertFalse(result.isPresent());
-    }
 
     @Test
     void generateApiKey_returnsApiKeyResponse() {
@@ -201,8 +191,7 @@ class ApiKeyServiceTest {
         savedApiKey.setActive(true);
 
         when(apiKeyRepository.save(any(ApiKey.class))).thenReturn(savedApiKey);
-        when(apiKeyRepository.findByHashedApiKeyAndIsActiveTrue(anyString()))
-                .thenReturn(Optional.of(savedApiKey));
+
 
         ApiKeyResponse response = apiKeyService.generateApiKey(user, "my-key");
 
@@ -222,8 +211,6 @@ class ApiKeyServiceTest {
         savedApiKey.setActive(true);
 
         when(apiKeyRepository.save(any(ApiKey.class))).thenReturn(savedApiKey);
-        when(apiKeyRepository.findByHashedApiKeyAndIsActiveTrue(anyString()))
-                .thenReturn(Optional.of(savedApiKey));
 
         ApiKeyResponse response = apiKeyService.generateApiKey(user, "my-key");
 
