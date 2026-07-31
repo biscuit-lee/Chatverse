@@ -20,6 +20,7 @@ class FakeTool(BaseTool):
 
 def test_register_one_tool():
     agent = Agent(
+        id=1,
         name="Test Agent",
         description="A test agent",
         tools=[FakeTool()],
@@ -31,6 +32,7 @@ def test_register_one_tool():
 
 def test_register_empty_tool():
     agent = Agent(
+        id=2,
         name="Test Agent",
         description="A test agent",
         tools=[],
@@ -41,6 +43,7 @@ def test_register_empty_tool():
 
 def test_register_multiple_tools():
     agent = Agent(
+        id=3,
         name="Test Agent",
         description="A test agent",
         tools=[FakeTool(name="tool1"), FakeTool(name="tool2")],
@@ -53,6 +56,7 @@ def test_register_multiple_tools():
 
 def test_agent_properties():
     agent = Agent(
+        id=4,
         name="My Agent",
         description="Helps users",
         tools=[],
