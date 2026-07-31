@@ -19,7 +19,7 @@ def test_create_agent_returns_agent():
         api_key="cv_live_test123",
     )
 
-    with patch("agent_framework.tools.chatverse_service.client.ChatverseClient") as mock_client_cls:
+    with patch("agent_framework.factory.agent_factory.ChatverseClient") as mock_client_cls:
         agent = factory.create_agent(config)
 
     assert agent.id == "test-1"
