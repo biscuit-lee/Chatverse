@@ -19,7 +19,7 @@ def test_create_agent_returns_agent():
         api_key="cv_live_test123",
     )
 
-    with patch("agent_framework.factory.agent_factory.ChatverseClient") as mock_client_cls:
+    with patch("agent_framework.tools.chatverse_service.client.ChatverseClient") as mock_client_cls:
         agent = factory.create_agent(config)
 
     assert agent.id == "test-1"
@@ -83,7 +83,7 @@ def test_create_agent_creates_tools():
         api_key="cv_live_test123",
     )
 
-    with patch("agent_framework.tools.chatverse_service.client.ChatverseClient") as mock_client_cls:
+    with patch("agent_framework.factory.agent_factory.ChatverseClient") as mock_client_cls:
         agent = factory.create_agent(config)
 
     tool_types = [type(t).__name__ for t in agent.tools]
@@ -105,7 +105,7 @@ def test_create_agent_tools_share_client():
         api_key="cv_live_test123",
     )
 
-    with patch("agent_framework.tools.chatverse_service.client.ChatverseClient") as mock_client_cls:
+    with patch("agent_framework.factory.agent_factory.ChatverseClient") as mock_client_cls:
         agent = factory.create_agent(config)
 
     assert agent.tools[0].client is agent.tools[1].client
