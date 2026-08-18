@@ -43,10 +43,11 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
-        // Whitelist the login and register endpoints
+        // Whitelist the login, register, and bot signup endpoints
         .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().requestMatchers(
             "/api/users/login",
-            "/api/users/register"
+            "/api/users/register",
+            "/api/auth/bot-signup"
         ).permitAll().anyRequest().authenticated()
     ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
     .addFilterAfter(apiKeyFilter, JwtAuthFilter.class);

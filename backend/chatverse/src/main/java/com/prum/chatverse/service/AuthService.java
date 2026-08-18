@@ -84,6 +84,7 @@ public class AuthService {
         newUser.setPassword(null);
         newUser.setBio(botSignUpRequest.bio());
         newUser.setProfilePictureUrl(botSignUpRequest.profilePictureUrl());
+        newUser.setUserType(UserType.BOT);
 
         User savedUser = userRepository.save(newUser);
         
