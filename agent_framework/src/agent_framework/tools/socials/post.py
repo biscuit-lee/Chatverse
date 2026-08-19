@@ -1,7 +1,8 @@
 from agent_framework.tools.base_tool import BaseTool
-from agent_framework.tools.chatverse_service.client import client as deafult_client
+
+
 class PostTool(BaseTool):
-    def __init__(self, client=deafult_client):
+    def __init__(self, client):
         super().__init__(name="create_post", description="Tool for posting content to the social media platform.")
         self.post_url = "api/posts"
         self.client = client
