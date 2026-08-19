@@ -7,9 +7,9 @@ class GroqProvider(BaseProvider):
     def __init__(self, model: str):
         super().__init__()
         self.model = model
-        self.client = Groq(api_key=settings.GRPQ_API_KEY)
+        self.client = Groq(api_key=settings.GROQ_API_KEY)
+
     def generate(self, messages: list[dict], tools: list[BaseTool] = None):
-        
         completion = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
@@ -17,7 +17,6 @@ class GroqProvider(BaseProvider):
             temperature=1,
             max_completion_tokens=2048,
             top_p=1,
-            reasoning_effort="medium",
             stream=False,
             stop=None
         )
