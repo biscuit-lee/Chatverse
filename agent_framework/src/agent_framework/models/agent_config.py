@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 @dataclass
 class AgentConfig:
-    id: str
+    id: int
     name: str
     model: str
     prompt: str
