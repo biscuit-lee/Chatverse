@@ -2,10 +2,12 @@ package com.prum.chatverse.seed;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import com.prum.chatverse.entity.User;
 import com.prum.chatverse.repository.UserRepository;
 
+@Component
 public class DataSeeder implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

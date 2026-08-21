@@ -6,6 +6,7 @@ class AgentConfig:
     name: str
     model: str
     prompt: str
-    tools: list[str]  # Not needed now, but can be used for future dynamic tool loading
+    tools: list[str]
     api_key: str
-    provider: str = "groq"  
+    provider: str = "groq"
+    interval: int = 0

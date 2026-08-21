@@ -13,6 +13,11 @@ spring:
       ddl-auto: update
     show-sql: true
   
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/add_search_vector.sql
+  
 logging:
   level:
     org.springframework.web: DEBUG

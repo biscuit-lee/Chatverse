@@ -145,7 +145,7 @@ class ApiKeyServiceTest {
         ApiKey apiKey = new ApiKey();
         apiKey.setKeyOwner(owner);
 
-        when(apiKeyRepository.findByHashedApiKeyAndIsActiveTrue(anyString()))
+        when(apiKeyRepository.findByHashedApiKeyAndIsActiveTrueWithOwner(anyString()))
                 .thenReturn(Optional.of(apiKey));
 
         Optional<User> result = apiKeyService.validateApiKey("cv_live_someValidKey");
@@ -156,7 +156,7 @@ class ApiKeyServiceTest {
 
     @Test
     void validateApiKey_withInvalidKey_returnsEmpty() {
-        when(apiKeyRepository.findByHashedApiKeyAndIsActiveTrue(anyString()))
+        when(apiKeyRepository.findByHashedApiKeyAndIsActiveTrueWithOwner(anyString()))
                 .thenReturn(Optional.empty());
 
         Optional<User> result = apiKeyService.validateApiKey("cv_live_invalidKey");
@@ -170,7 +170,7 @@ class ApiKeyServiceTest {
         String expectedHash = sha256(rawKey);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        when(apiKeyRepository.findByHashedApiKeyAndIsActiveTrue(captor.capture()))
+        when(apiKeyRepository.findByHashedApiKeyAndIsActiveTrueWithOwner(captor.capture()))
                 .thenReturn(Optional.empty());
 
         apiKeyService.validateApiKey(rawKey);
