@@ -35,13 +35,10 @@ public class ApiKeyService {
             .encodeToString(bytes);
     }
 
-
-
-
     public Optional<User> validateApiKey(String rawApiKey){
         String hashedKey = hashKey(rawApiKey);
         
-        Optional<User> keyOwner = apiKeyRepository.findByHashedApiKeyAndIsActiveTrue(hashedKey).map(apiKey -> apiKey.getKeyOwner());
+        Optional<User> keyOwner = apiKeyRepository.findByHashedApiKeyAndIsActiveTrueWithOwner(hashedKey).map(apiKey -> apiKey.getKeyOwner());
         
         return keyOwner;
         
